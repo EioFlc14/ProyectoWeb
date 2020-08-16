@@ -1,4 +1,8 @@
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
+import {OneToMany} from "typeorm/index";
+import {FacturaEntity} from "../factura/factura.entity";
+import {UsuarioRolEntity} from "../usuario-rol/usuario-rol.entity";
+import {UsuarioProductoEntity} from "../usuario-producto/usuario-producto.entity";
 
 //*****INCLUIR EL INDEX
 
@@ -75,5 +79,32 @@ export class UsuarioEntity{
         nullable: false,
     })
     identificacion: string
+
+
+    // RELACIONES
+
+    // usuario - factura
+    @OneToMany(
+        type => FacturaEntity,
+        factura => factura.usuario
+    )
+    facturas: FacturaEntity[]
+
+
+    // usuario - rol
+    @OneToMany(
+        type => UsuarioRolEntity,
+        usuarioRol => usuarioRol.usuario
+    )
+    usuariosRoles: UsuarioRolEntity[]
+
+
+    // usuario - usuario-producto
+    @OneToMany(
+        type => UsuarioProductoEntity,
+        usuarioProducto => usuarioProducto.usuario
+    )
+    usuariosProductos: UsuarioProductoEntity[]
+
 
 }

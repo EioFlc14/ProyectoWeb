@@ -7,10 +7,7 @@ import {UsuarioEntity} from "./usuario.entity";
 
 @Module({
     imports: [
-        TypeOrmModule
-            .forFeature([
-                UsuarioEntity
-            ], 'default')
+        TypeOrmModule.forFeature([UsuarioEntity], 'default')
     ],
     controllers:[
         UsuarioController
