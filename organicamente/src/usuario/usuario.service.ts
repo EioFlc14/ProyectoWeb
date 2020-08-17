@@ -7,7 +7,8 @@ import {Repository} from "typeorm";
 export class  UsuarioService {
 
     constructor(
-        @InjectRepository(UsuarioEntity) private repositorio: Repository<UsuarioEntity>
+        @InjectRepository(UsuarioEntity)
+        private repositorio: Repository<UsuarioEntity>
     ) {
     }
 
@@ -21,6 +22,14 @@ export class  UsuarioService {
 
     buscarUno(id: number){
         return this.repositorio.findOne(id)
+    }
+
+    editarUno(usuarioEditado:UsuarioEntity){
+        return this.repositorio.save(usuarioEditado)
+    }
+
+    eliminarUno(id:number){
+        return this.repositorio.delete(id)
     }
 
 

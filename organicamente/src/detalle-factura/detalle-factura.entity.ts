@@ -21,7 +21,7 @@ export class DetalleFacturaEntity{
         type: 'int',
         nullable: false,
     })
-    cantidad:string
+    cantidad:number
 
     @Column({
         name: 'precio',
@@ -30,7 +30,7 @@ export class DetalleFacturaEntity{
         scale: 3, // decimales
         nullable: false,
     })
-    precio:string
+    precio:number
 
     @Column({
         name: 'valor',
@@ -39,7 +39,7 @@ export class DetalleFacturaEntity{
         scale: 4, // decimales
         nullable: false,
     })
-    subtotal:string
+    subtotal:number
 
 
 
