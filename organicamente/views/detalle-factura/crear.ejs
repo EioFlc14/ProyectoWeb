@@ -1,0 +1,35 @@
+<h1>CREAR DETALLE FACTURA</h1>
+
+
+<% if(typeof error != 'undefined'){%>
+    <p> MENSAJE: <%= error %></p>
+<% }%>
+
+<form action="/detalle-factura/crearDesdeVista" method="POST">
+
+    <% const existeCantidad = typeof cantidad !== 'undefined'%>
+    <label for="cantidad">Cantidad:</label>
+    <input id="cantidad" type="text" name="cantidad" value="<%= existeCantidad ? cantidad: '' %>">
+    <br>
+    <% const existePrecio = typeof precio !== 'undefined'%>
+    <label for="precio">Precio:</label>
+    <input id="precio" type="text" name="precio" value="<%= existePrecio ? precio: '' %>">
+    <br>
+    <% const existeValor = typeof valor !== 'undefined'%>
+    <label for="valor">Valor:</label>
+    <input id="valor" type="text" name="valor" value="<%= existeValor ? valor: '' %>">
+    <br>
+    <% const existeUsuarioProductoId = typeof usuarioId !== 'undefined'%>
+    <label for="usuarioProductoId">Usuario:</label>
+    <input id="usuarioProductoId" type="text" name="usuarioProductoUsuarioProductoId" value="<%= existeUsuarioProductoId ? usuarioId: '' %>">
+    <br>
+    <% const existeFacturaId = typeof facturaId !== 'undefined'%>
+    <label for="facturaId">Factura:</label>
+    <input id="facturaId" type="text" name="facturaFacturaId" value="<%= existeFacturaId ? facturaId: '' %>">
+    <br>
+    <button type="submit">SUBMIT</button>
+    <button type="reset">RESET</button>
+
+</form>
+
+

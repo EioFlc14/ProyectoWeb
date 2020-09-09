@@ -1,0 +1,29 @@
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<a href="/producto/vista/crear">
+    <button>
+        CREAR
+    </button>
+</a>
+
+<table>
+    <tr>
+        <th>Nombre</th>
+        <!--   ESTO ES PARA UNA VISTA DE ADMINISTRADOR YA QUE SOLO INGRESA LOS PRODUCTOS -->
+    </tr>
+
+    <% arregloProductos.forEach((objeto) => { %>
+        <tr>
+            <td><%= objeto.nombre %></td>
+            <td>
+                <button>Ver</button>
+                <button>Editar</button>
+                <form action="/producto/eliminarDesdeVista/<%= objeto.productoId %>" method="post">
+                    <button>Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    <% }) %>
+
+</table>

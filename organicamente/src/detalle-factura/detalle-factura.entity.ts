@@ -39,7 +39,7 @@ export class DetalleFacturaEntity{
         scale: 4, // decimales
         nullable: false,
     })
-    subtotal:number
+    valor:number
 
 
 

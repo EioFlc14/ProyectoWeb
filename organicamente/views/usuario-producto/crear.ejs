@@ -1,0 +1,38 @@
+<h1>CREAR PRODUCTO DE USUARIO</h1>
+
+
+<% if(typeof error != 'undefined'){%>
+    <p> MENSAJE: <%= error %></p>
+<% }%>
+
+<form action="/usuario-producto/crearDesdeVista" method="POST">
+
+    <% const existeProductoId = typeof productoProductoId !== 'undefined'%>
+    <label for="productoProductoId">Producto:</label>
+    <input id="productoProductoId" type="text" name="productoProductoId" value="<%= existeProductoId ? productoProductoId: '' %>">
+    <br>
+    <% const existeStock = typeof stock !== 'undefined'%>
+    <label for="stock">Stock:</label>
+    <input id="stock" type="number" name="stock" value="<%= existeStock ? stock: '' %>">
+    <br>
+    <% const existePrecio = typeof precio !== 'undefined'%>
+    <label for="precio">Precio:</label>
+    <input id="precio" type="text" name="precio" value="<%= existePrecio ? precio: '' %>">
+    <br>
+    <% const existeUnidadId = typeof unidadUnidadId !== 'undefined'%>
+    <label for="unidadUnidadId">Unidad:</label>
+    <input id="unidadUnidadId" type="text" name="unidadUnidadId" value="<%= existeUnidadId ? unidadUnidadId: '' %>">
+    <br>
+    <% const existeUsuarioId = typeof usuarioUsuarioId !== 'undefined'%>
+    <label for="usuarioUsuarioId">Usuario:</label>
+    <input id="usuarioUsuarioId" type="text" name="usuarioUsuarioId" value="<%= existeUsuarioId ? usuarioUsuarioId: '' %>">
+    <br>
+
+    <button type="submit">SUBMIT</button>
+    <button type="reset">RESET</button>
+    <button type="button">BUTTON</button>
+    <button>adf</button>
+
+</form>
+
+

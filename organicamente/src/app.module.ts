@@ -51,7 +51,7 @@ import {UsuarioRolEntity} from "./usuario-rol/usuario-rol.entity";
             UsuarioProductoEntity,
             UsuarioRolEntity,
         ],
-        synchronize: true,
+        synchronize: false,
         dropSchema: false
 
 

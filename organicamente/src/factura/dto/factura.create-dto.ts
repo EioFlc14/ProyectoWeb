@@ -21,16 +21,15 @@ export class FacturaCreateDto{
     @IsNotEmpty()
     @IsNumberString()
     @IsDecimal({'decimal_digits': '0,3'})
-    total:number
+    total:string
 
     @IsNotEmpty()
-    @IsDate()
+    //@IsDateString()
     fecha:string
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    usuarioId:number
+    @IsNumberString()
+    usuarioId:string
 
     @IsNotEmpty()
     @MaxLength(5)

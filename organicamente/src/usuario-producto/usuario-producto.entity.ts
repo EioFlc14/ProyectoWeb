@@ -6,6 +6,7 @@ import {UnidadEntity} from "../unidad/unidad.entity";
 import {ImagenEntity} from "../imagen/imagen.entity";
 import {DetalleFacturaEntity} from "../detalle-factura/detalle-factura.entity";
 import {UsuarioEntity} from "../usuario/usuario.entity";
+import {FacturaEntity} from "../factura/factura.entity";
 
 //*****INCLUIR EL INDEX
 
@@ -24,7 +25,7 @@ export class UsuarioProductoEntity {
         type: 'int',
         nullable: false,
     })
-    cantidad: string
+    stock: number
 
     @Column({
         name: 'precio',
@@ -33,8 +34,9 @@ export class UsuarioProductoEntity {
         scale: 3, // decimales
         nullable: false,
     })
-    precio: string
+    precio: number
 
+    // ****************REVISAR LAS RELACIONES DE AQUÍIIIIIIIIIIIIIIIIIIII POR QUE SE ESTÁN METIENDO MAL
 
     // RELACIONES
 
@@ -71,13 +73,10 @@ export class UsuarioProductoEntity {
 
 
     // usuario.producto - usuario
-    @OneToMany(
+    @ManyToOne(
         type => UsuarioEntity,
         usuario => usuario.usuariosProductos
     )
     usuario: UsuarioEntity
-
-
-
 
 }

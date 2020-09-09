@@ -1,0 +1,29 @@
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<a href="/unidad/vista/crear">
+    <button>
+        CREAR
+    </button>
+</a>
+
+<table>
+    <tr>
+        <th>Nombre</th>
+        <!--   ESTO ES PARA UNA VISTA DE ADMINISTRADOR YA QUE SOLO INGRESA LAS UNIDADES -->
+    </tr>
+
+    <% arregloUnidades.forEach((objeto) => { %>
+        <tr>
+            <td><%= objeto.nombre %></td>
+            <td>
+                <button>Ver</button>
+                <button>Editar</button>
+                <form action="/unidad/eliminarDesdeVista/<%= objeto.unidadId %>" method="post">
+                    <button>Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    <% }) %>
+
+</table>

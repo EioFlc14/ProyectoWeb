@@ -1,0 +1,34 @@
+<h1>CREAR FACTURA</h1>
+
+
+<% if(typeof error != 'undefined'){%>
+    <p> MENSAJE: <%= error %></p>
+<% }%>
+
+<form action="/factura/crearDesdeVista" method="POST">
+<!--    <% const existeNumFactura = typeof numFactura !== 'undefined'%>
+    <label for="numFactura">Nombre:</label>
+    <input id="numFactura" type="text" name="factura_id" value="<%= existeNumFactura ? numFactura: '' %>">
+    <br>-->
+    <% const existeFecha = typeof fecha !== 'undefined'%>
+    <label for="fecha">Fecha:</label>
+    <input id="fecha" type="datetime-local" name="fecha" value="<%= existeFecha ? fecha: '' %>">
+    <br>
+    <% const existeTotal = typeof total !== 'undefined'%>
+    <label for="total">Total:</label>
+    <input id="total" type="text" name="total" value="<%= existeTotal ? total: '' %>">
+    <br>
+    <% const existeCumplido = typeof cumplido !== 'undefined'%>
+    <label for="cumplido">Cumplido:</label>
+    <input id="cumplido" type="text" name="cumplido" value="<%= existeCumplido ? cumplido: '' %>">
+    <br>
+    <% const existeUsuarioId = typeof usuarioId !== 'undefined'%>
+    <label for="usuarioId">Usuario:</label>
+    <input id="usuarioId" type="text" name="usuarioUsuarioId" value="<%= existeUsuarioId ? usuarioId: '' %>">
+    <br>
+    <button type="submit">SUBMIT</button>
+    <button type="reset">RESET</button>
+
+</form>
+
+

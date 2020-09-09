@@ -5,28 +5,24 @@ export class UsuarioProductoCreateDto{
 
 
     @IsNotEmpty()
-    @IsNumber()
-    stock:number
+    @IsNumberString()
+    stock:string
 
     @IsNotEmpty()
     @IsNumberString()
     @IsDecimal({'decimal_digits': '0,3'})
-    precio:number
+    precio:string
 
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    productoId:number
+    @IsNumberString()
+    productoProductoId:string
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    usuarioId:number
+    @IsNumberString()
+    usuarioUsuarioId:string
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    unidadId:number
-
+    @IsNumberString()
+    unidadUnidadId:string
 }

@@ -1,0 +1,19 @@
+<h1>CREAR ROL</h1>
+
+
+<% if(typeof error != 'undefined'){%>
+    <p> MENSAJE: <%= error %></p>
+<% }%>
+
+<form action="/rol/crearDesdeVista" method="POST">
+    <% const existeNombre = typeof nombre !== 'undefined'%>
+    <label for="nombre">Nombre:</label>
+    <input id="nombre" type="text" name="nombre" value="<%= existeNombre ? nombre: '' %>">
+    <br>
+    <button type="submit">SUBMIT</button>
+    <button type="reset">RESET</button>
+
+
+</form>
+
+

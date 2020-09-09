@@ -9,7 +9,6 @@ export class UsuarioProductoService{
     constructor( //Inyeccion de dependencias
         @InjectRepository(UsuarioProductoEntity)
         private repositorio: Repository<UsuarioProductoEntity>
-
     ) {
     }
 

@@ -1,0 +1,36 @@
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<a href="/usuario-producto/vista/crear">
+    <button>
+        CREAR
+    </button>
+</a>
+
+<table>
+    <tr>
+        <th>Producto</th>
+        <th>Stock</th>
+        <th>Precio</th>
+        <th>Unidad</th>
+        <th>Usuario</th>
+
+    </tr>
+
+    <% arregloUsuarioProductos.forEach((objeto) => { %>
+        <tr>
+            <td><%= objeto.productoProductoId %></td>
+            <td><%= objeto.stock %></td>
+            <td><%= objeto.precio %></td>
+            <td><%= objeto.unidadUnidadId %></td>
+            <td><%= objeto.usuarioUsuarioId %></td>
+            <td>
+                <button>Ver</button>
+                <button>Editar</button>
+                <form action="/usuario-producto/eliminarDesdeVista/<%= objeto.usuarioProductoId %>" method="post">
+                    <button>Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    <% }) %>
+
+</table>

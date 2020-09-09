@@ -1,10 +1,10 @@
-import {IsNotEmpty, IsNumber, IsPositive, Max} from "class-validator";
+import {IsNotEmpty, IsNumber, IsPositive, Max, MaxLength} from "class-validator";
 
 
 export class UnidadCreateDto{
 
     @IsNotEmpty()
-    @Max(30)
+    @MaxLength(30)
     nombre:string
 
 

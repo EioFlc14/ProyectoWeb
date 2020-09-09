@@ -1,0 +1,29 @@
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<a href="/detalle-factura/vista/crear">
+    <button>
+        CREAR
+    </button>
+</a>
+
+
+<table>
+    <tr>
+        <th>CANTIDAD</th>
+        <th>PRECIO</th>
+        <th>VALOR</th>
+        <th>USUARIO</th>
+        <th>FACTURA</th>
+    </tr>
+
+    <% arregloDetalleFacturas.forEach((objeto) => { %>
+        <tr>
+            <td><%= objeto.cantidad %></td>
+            <td><%= objeto.precio %> </td>
+            <td><%= objeto.valor %> </td>
+            <td><%= objeto.usuarioProductoUsuarioProductoId %> </td>
+            <td><%= objeto.facturaFacturaId %> </td>
+        </tr>
+    <% }) %>
+
+</table>

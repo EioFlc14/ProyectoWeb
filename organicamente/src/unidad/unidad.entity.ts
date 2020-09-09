@@ -2,7 +2,7 @@ import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 import {OneToMany} from "typeorm/index";
 import {UsuarioProductoEntity} from "../usuario-producto/usuario-producto.entity";
 
-//*****INCLUIR EL INDEX
+//***** INDEX
 
 
 @Entity('unidad')
@@ -30,9 +30,5 @@ export class UnidadEntity{
         usuarioProducto => usuarioProducto.unidad
     )
     usuarioProductos: UsuarioProductoEntity[]
-
-
-
-
 
 }

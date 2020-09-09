@@ -9,8 +9,7 @@ export class DetalleFacturaCreateDto{
     id:number */
 
     @IsNotEmpty()
-    @IsNumber()
-    @Min(1)
+    @IsNumberString()
     cantidad:number
 
     @IsNotEmpty()
@@ -24,14 +23,12 @@ export class DetalleFacturaCreateDto{
     precio:number
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    usuarioProductoId:number
+    @IsNumberString()
+    usuarioProductoId:string
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    facturaId:number
+    @IsNumberString()
+    facturaId:string
 
 
 }
