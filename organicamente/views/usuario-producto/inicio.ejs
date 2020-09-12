@@ -18,11 +18,11 @@
 
     <% arregloUsuarioProductos.forEach((objeto) => { %>
         <tr>
-            <td><%= objeto.productoProductoId %></td>
+            <td><%= objeto.producto.nombre%></td>
             <td><%= objeto.stock %></td>
             <td><%= objeto.precio %></td>
-            <td><%= objeto.unidadUnidadId %></td>
-            <td><%= objeto.usuarioUsuarioId %></td>
+            <td><%= objeto.unidad.nombre%></td>
+            <td><%= objeto.usuario.username%></td>
             <td>
                 <button>Ver</button>
                 <button>Editar</button>

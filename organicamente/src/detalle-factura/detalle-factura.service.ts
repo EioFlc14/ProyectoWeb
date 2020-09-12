@@ -1,7 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {DetalleFacturaEntity} from "./detalle-factura.entity";
-import {Repository} from "typeorm/index";
+import {createQueryBuilder, Repository, getRepository, getManager, EntityManager} from "typeorm/index";
 
 @Injectable()
 export class DetalleFacturaService{
@@ -16,8 +16,10 @@ export class DetalleFacturaService{
         return this.repositorio.save(nuevoDetalleFactura)
     }
 
-    buscarTodos(){
-        return this.repositorio.find()
+    async buscarTodos(){
+        return await getManager('default')
+        .query(`select df.*, p.nombre from detalle_factura df inner join usuario_producto up on df.usuarioProductoUsuarioProductoId = up.usuario_producto_id inner join producto p on up.productoProductoId = p.producto_id;`)
+
     }
 
     buscarUno(id: number){

@@ -1,0 +1,30 @@
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+
+<a href="/usuario-rol/vista/crear">
+    <button>
+        CREAR
+    </button>
+</a>
+
+<table>
+    <tr>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <!--   ESTO ES PARA UNA VISTA DE ADMINISTRADOR YA QUE SOLO INGRESA LOS ROLES -->
+    </tr>
+
+    <% arregloUsuariosRoles.forEach((objeto) => { %>
+        <tr>
+            <td><%= objeto.usuario.username %></td>
+            <td><%= objeto.rol.nombre %></td>
+            <td>
+                <button>Ver</button>
+                <button>Editar</button>
+                <form action="/usuario-rol/eliminarDesdeVista/<%= objeto.usuarioRolId %>" method="post">
+                    <button>Eliminar</button>
+                </form>
+            </td>
+        </tr>
+    <% }) %>
+
+</table>

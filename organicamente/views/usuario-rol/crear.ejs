@@ -1,0 +1,23 @@
+<h1>CREAR USUARIO-ROL</h1>
+
+
+<% if(typeof error != 'undefined'){%>
+    <p> MENSAJE: <%= error %></p>
+<% }%>
+
+<form action="/usuario-rol/crearDesdeVista" method="POST">
+    <% const existeUsuario = typeof usuario !== 'undefined'%>
+    <label for="usuario">Usuario:</label>
+    <input id="usuario" type="text" name="usuario" value="<%= existeUsuario ? usuario: '' %>">
+    <br>
+    <% const existeRol = typeof rol !== 'undefined'%>
+    <label for="rol">Rol:</label>
+    <input id="rol" type="text" name="rol" value="<%= existeRol ? rol: '' %>">
+    <br>
+
+    <button type="submit">SUBMIT</button>
+    <button type="reset">RESET</button>
+
+
+</form>
+

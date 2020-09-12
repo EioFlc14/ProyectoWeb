@@ -1,7 +1,7 @@
 import {IsDate, IsDecimal, IsNotEmpty, IsNumber, IsNumberString, IsPositive, MaxLength} from "class-validator";
 
 
-export class facturaUpdateDto{
+export class FacturaUpdateDto{
 
     @IsNotEmpty()
     @IsPositive()
@@ -11,20 +11,18 @@ export class facturaUpdateDto{
     @IsNotEmpty()
     @IsNumberString()
     @IsDecimal({'decimal_digits': '0,3'})
-    total:number
+    total:string
 
     @IsNotEmpty()
-    @IsDate()
+        //@IsDateString()
     fecha:string
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    usuarioId:number
+    @IsNumberString()
+    usuarioId:string
 
     @IsNotEmpty()
     @MaxLength(5)
     cumplido:string
-
 
 }

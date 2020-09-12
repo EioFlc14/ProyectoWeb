@@ -61,7 +61,6 @@ export class ProductoController{
         let respuestaCreacionProducto
         const productoCreado = new ProductoCreateDto()
         productoCreado.nombre = paramBody.nombre
-        // **************************+ FALTA VER LO DE LA IMAGEN COMO SE GUARDA ****************************
 
 
         const errores: ValidationError[] = await validate(productoCreado)

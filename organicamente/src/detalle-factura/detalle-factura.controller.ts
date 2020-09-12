@@ -14,13 +14,17 @@ import {FacturaCreateDto} from "../factura/dto/factura.create-dto";
 import {validate, ValidationError} from "class-validator";
 import {DetalleFacturaService} from "./detalle-factura.service";
 import {DetalleFacturaCreateDto} from "./dto/detalle-factura.create-dto";
+import {UsuarioService} from "../usuario/usuario.service";
+import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
+import {UsuarioEntity} from "../usuario/usuario.entity";
 
 
 @Controller('detalle-factura')
 export class DetalleFacturaController{
 
     constructor(
-        private readonly _detalleFacturaService: DetalleFacturaService
+        private readonly _detalleFacturaService: DetalleFacturaService,
+        private readonly _usuarioService: UsuarioService
     ) {
     }
 
@@ -32,6 +36,7 @@ export class DetalleFacturaController{
         let resultadoEncontrado
         try {
             resultadoEncontrado = await this._detalleFacturaService.buscarTodos()
+
         } catch(error){
             throw new InternalServerErrorException('Error encontrando Detalle Factura')
         }
@@ -55,8 +60,8 @@ export class DetalleFacturaController{
                 cantidad: parametrosConsulta.cantidad,
                 precio: parametrosConsulta.precio,
                 valor: parametrosConsulta.valor,
-                usuarioProductoUsuarioProductoId: parametrosConsulta.usuarioProductoUsuarioProductoId,
-                facturaFacturaId: parametrosConsulta.facturaFacturaId,
+                usuarioProducto: parametrosConsulta.usuarioProducto,
+                factura: parametrosConsulta.factura,
             })
     }
 
@@ -71,13 +76,13 @@ export class DetalleFacturaController{
         detalleFacturaValidada.cantidad = paramBody.cantidad
         detalleFacturaValidada.precio = paramBody.precio
         detalleFacturaValidada.valor = paramBody.valor
-        detalleFacturaValidada.usuarioProductoId = paramBody.usuarioProductoUsuarioProductoId
-        detalleFacturaValidada.facturaId = paramBody.facturaFacturaId
+        detalleFacturaValidada.usuarioProductoId = paramBody.usuarioProducto
+        detalleFacturaValidada.facturaId = paramBody.factura
 
         console.log(paramBody)
 
         const errores: ValidationError[] = await validate(detalleFacturaValidada)
-        const texto = `&cantidad=${paramBody.cantidad}&precio=${paramBody.precio}&valor=${paramBody.valor}&usuarioProductoUsuarioProductoId=${paramBody.usuarioProductoUsuarioProductoId}&facturaFacturaId=${paramBody.facturaFacturaId}`
+        const texto = `&cantidad=${paramBody.cantidad}&precio=${paramBody.precio}&valor=${paramBody.valor}&usuarioProducto=${paramBody.usuarioProducto}&factura=${paramBody.factura}`
         if(errores.length > 0){
             console.error('Errores:',errores);
             const error = 'Error en el formato de los datos'
@@ -87,8 +92,8 @@ export class DetalleFacturaController{
                 paramBody.cantidad = Number(paramBody.cantidad)
                 paramBody.precio = Number(paramBody.precio)
                 paramBody.valor = Number(paramBody.valor)
-                paramBody.usuarioProductoUsuarioProductoId = Number(paramBody.usuarioProductoUsuarioProductoId)
-                paramBody.facturaFacturaId = Number(paramBody.facturaFacturaId)
+                paramBody.usuarioProducto = Number(paramBody.usuarioProducto)
+                paramBody.factura = Number(paramBody.factura)
 
                 respuestaCreacionFactura = await this._detalleFacturaService.crearUno(paramBody)
             } catch (e){

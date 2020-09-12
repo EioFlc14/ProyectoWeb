@@ -1,30 +1,72 @@
-<h1>CREAR FACTURA</h1>
+
+
+<% const existeFactura = typeof factura !== 'undefined'%>
+
+<% let existeNumFactura = typeof numFactura !== 'undefined'%>
+<% let existeFecha = typeof fecha !== 'undefined'%>
+<% let existeTotal = typeof total !== 'undefined'%>
+<% let existeCumplido = typeof cumplido !== 'undefined'%>
+<% let existeUsuarioId = typeof usuarioId !== 'undefined'%>
+
+
+<h1> <%= existeFactura ? 'Editar': 'Crear' %> factura</h1>
+
+<% if(existeFactura) {%>
+    <% existeNumFactura = true %>
+    <% existeFecha = true %>
+    <% existeTotal = true %>
+    <% existeCumplido = true %>
+    <% existeUsuarioId = true %>
+
+    <% numFactura = factura.facturaId %>
+    <% fecha = factura.fecha %>
+    <% total = factura.total %>
+    <% cumplido = factura.cumplido %>
+    <% usuarioId = factura.usuario.usuarioId %>
+
+<%}%>
 
 
 <% if(typeof error != 'undefined'){%>
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action="/factura/crearDesdeVista" method="POST">
-<!--    <% const existeNumFactura = typeof numFactura !== 'undefined'%>
-    <label for="numFactura">Nombre:</label>
-    <input id="numFactura" type="text" name="factura_id" value="<%= existeNumFactura ? numFactura: '' %>">
-    <br>-->
-    <% const existeFecha = typeof fecha !== 'undefined'%>
+<form action=" <%= existeFactura ? '/factura/editarDesdeVista/' + factura.facturaId : '/factura/crearDesdeVista'%>" method="POST">
+    <% if(existeFactura) {%>
+        <label for="numFactura">N° Factura:</label>
+        <input id="numFactura" type="text" name="factura_id" disabled value="<%= existeNumFactura ? numFactura: '' %>">
+    <%}%>
+    <br>
+
     <label for="fecha">Fecha:</label>
-    <input id="fecha" type="datetime-local" name="fecha" value="<%= existeFecha ? fecha: '' %>">
+    <input id="fecha"
+           type="datetime-local"
+           name="fecha"
+            <% if(existeFactura) {%>
+                disabled
+            <%}%>
+           value="<%= existeFecha ? fecha: '' %>">
     <br>
-    <% const existeTotal = typeof total !== 'undefined'%>
+
     <label for="total">Total:</label>
-    <input id="total" type="text" name="total" value="<%= existeTotal ? total: '' %>">
+    <input id="total"
+           type="text"
+           <% if(existeFactura) {%>
+                disabled
+           <%}%>
+           name="total" value="<%= existeTotal ? total: '' %>">
     <br>
-    <% const existeCumplido = typeof cumplido !== 'undefined'%>
+
     <label for="cumplido">Cumplido:</label>
     <input id="cumplido" type="text" name="cumplido" value="<%= existeCumplido ? cumplido: '' %>">
     <br>
-    <% const existeUsuarioId = typeof usuarioId !== 'undefined'%>
+
     <label for="usuarioId">Usuario:</label>
-    <input id="usuarioId" type="text" name="usuarioUsuarioId" value="<%= existeUsuarioId ? usuarioId: '' %>">
+    <input id="usuarioId" type="text"
+            <% if(existeFactura) {%>
+                disabled
+            <%}%>
+           name="usuario" value="<%= existeFactura ? usuarioId:''%>">
     <br>
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>

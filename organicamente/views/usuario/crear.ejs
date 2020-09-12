@@ -1,51 +1,79 @@
-<h1>CREAR USUARIO</h1>
+
+
+<% const existeUsuario = typeof usuario != 'undefined'%>
+
+<% let existeNombre = typeof nombre !== 'undefined'%>
+<% let existeApellido = typeof apellido !== 'undefined'%>
+<% let existeEmail = typeof email !== 'undefined'%>
+<% let existeTelefono = typeof telefono !== 'undefined'%>
+<% let existeDireccion = typeof direccion !== 'undefined'%>
+<% let existeUsername = typeof username !== 'undefined'%>
+<% let existePassword = typeof password !== 'undefined'%>
+<% let existeIdentificacion = typeof identificacion !== 'undefined'%>
+
+
+<h1> <%= existeUsuario ? 'Editar': 'Crear' %> usuario</h1>
+
+<% if(existeUsuario) {%>
+    <% existeNombre = true %>
+    <% existeApellido = true%>
+    <% existeEmail = true %>
+    <% existeTelefono = true %>
+    <% existeDireccion = true %>
+    <% existeUsername = true %>
+    <% existeIdentificacion = true %>
+
+    <% nombre = usuario.nombre%>
+    <% apellido = usuario.apellido%>
+    <% email = usuario.email%>
+    <% telefono = usuario.telefono%>
+    <% direccion= usuario.direccion%>
+    <% username= usuario.username%>
+    <% identificacion= usuario.identificacion%>
+
+<%}%>
 
 
 <% if(typeof error != 'undefined'){%>
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action="/usuario/crearDesdeVista" method="POST">
-    <% const existeNombre = typeof nombre !== 'undefined'%>
+<form action=" <%= existeUsuario ? '/usuario/editarDesdeVista/' + usuario.usuarioId : '/usuario/crearDesdeVista'%>" method="POST">
+
     <label for="nombre">Nombre:</label>
     <input id="nombre" type="text" name="nombre" value="<%= existeNombre ? nombre: '' %>">
     <br>
-    <% const existeApellido = typeof apellido !== 'undefined'%>
     <label for="apellido">Apellido:</label>
     <input id="apellido" type="text" name="apellido" value="<%= existeApellido ? apellido: '' %>">
     <br>
-    <% const existeEmail = typeof email !== 'undefined'%>
     <label for="email">Email:</label>
     <input id="email" type="email" name="email" value="<%= existeEmail ? email: '' %>">
     <br>
-    <% const existeTelefono = typeof telefono !== 'undefined'%>
     <label for="telefono">Telefono:</label>
     <input id="telefono" type="text" name="telefono" value="<%= existeTelefono ? telefono: '' %>">
     <br>
-    <% const existeDireccion = typeof direccion !== 'undefined'%>
     <label for="direccion">Direccion:</label>
     <input id="direccion" type="text" name="direccion" value="<%= existeDireccion ? direccion: '' %>">
     <br>
-    <% const existeUsername = typeof username !== 'undefined'%>
     <label for="username">Username:</label>
     <input id="username" type="text" name="username" value="<%= existeUsername ? username: '' %>">
     <br>
-    <% const existePassword = typeof password !== 'undefined'%>
     <label for="password">Password:</label>
     <input id="password" type="password" name="password">
     <br>
-    <% const existeIdentificacion = typeof identificacion !== 'undefined'%>
     <label for="identificacion">Identificacion:</label>
-    <input id="identificacion" type="text" name="identificacion" value="<%= existeIdentificacion ? identificacion: '' %>">
+    <input id="identificacion"
+           type="text"
+           <% if(existeUsuario) {%>
+                disabled
+           <%}%>
+           name="identificacion"
+           value="<%= existeIdentificacion ? identificacion: '' %>">
     <br>
-
-
-
 
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>
     <button type="button">BUTTON</button>
-    <button>adf</button>
 
 </form>
 

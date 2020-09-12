@@ -17,7 +17,7 @@ export class UsuarioRolService{
     }
 
     buscarTodos(){
-        return this.repositorio.find()
+        return this.repositorio.find({relations:['usuario','rol']})
     }
 
     buscarUno(id: number){

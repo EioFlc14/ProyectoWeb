@@ -36,7 +36,7 @@ export class DetalleFacturaEntity{
         name: 'valor',
         type: "decimal",
         precision: 8, // enteros
-        scale: 4, // decimales
+        scale: 3, // decimales
         nullable: false,
     })
     valor:number
@@ -60,8 +60,5 @@ export class DetalleFacturaEntity{
         factura => factura.detallesFacturas
     )
     factura: FacturaEntity
-
-
-
 
 }

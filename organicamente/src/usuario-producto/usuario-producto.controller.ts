@@ -55,11 +55,11 @@ export class UsuarioProductoController{
         return res.render('usuario-producto/crear',
             {
                 error: parametrosConsulta.error,
-                productoProductoId: parametrosConsulta.productoProductoId,
+                producto: parametrosConsulta.producto,
                 stock: parametrosConsulta.stock,
                 precio: parametrosConsulta.precio,
-                usuarioUsuarioId: parametrosConsulta.usuarioUsuarioId,
-                unidadUnidadId: parametrosConsulta.unidadUnidadId
+                usuario: parametrosConsulta.usuario,
+                unidad: parametrosConsulta.unidad
             })
     }
 
@@ -73,14 +73,14 @@ export class UsuarioProductoController{
         //console.log(paramBody)
         let respuestaCreacionUsuario
         const usuarioProductoValidado = new UsuarioProductoCreateDto()
-        usuarioProductoValidado.productoProductoId = paramBody.productoProductoId
+        usuarioProductoValidado.productoProductoId = paramBody.producto
         usuarioProductoValidado.stock = paramBody.stock
         usuarioProductoValidado.precio = paramBody.precio
-        usuarioProductoValidado.unidadUnidadId = paramBody.unidadUnidadId
-        usuarioProductoValidado.usuarioUsuarioId = paramBody.usuarioUsuarioId
+        usuarioProductoValidado.unidadUnidadId = paramBody.unidad
+        usuarioProductoValidado.usuarioUsuarioId = paramBody.usuario
 
         const errores: ValidationError[] = await validate(usuarioProductoValidado)
-        const texto = `&productoProductoId=${paramBody.productoProductoId}&stock=${paramBody.stock}&precio=${paramBody.precio}&unidadUnidadId=${paramBody.unidadUnidadId}&usuarioUsuarioId=${paramBody.usuarioUsuarioId}`
+        const texto = `&producto=${paramBody.producto}&stock=${paramBody.stock}&precio=${paramBody.precio}&unidad=${paramBody.unidad}&usuario=${paramBody.usuario}`
         if(errores.length > 0){
             console.error('Errores:',errores);
             const error = 'Error en el formato de los datos'
@@ -91,9 +91,9 @@ export class UsuarioProductoController{
                 // ******************* PROBABLEMENTE AQUÍ SE DEBEN CASTEAR LOS DATOS PARA QUE SEAN INGRESADOS
                 paramBody.stock = Number(paramBody.stock)
                 paramBody.precio = Number(paramBody.precio)
-                paramBody.productoProductoId = Number(paramBody.productoProductoId)
-                paramBody.unidadUnidadId = Number(paramBody.unidadUnidadId)
-                paramBody.usuarioUsuarioId = Number(paramBody.usuarioUsuarioId)
+                paramBody.producto = Number(paramBody.producto)
+                paramBody.unidad = Number(paramBody.unidad)
+                paramBody.usuario = Number(paramBody.usuario)
                 console.log(paramBody)
                 respuestaCreacionUsuario = await this._usuarioProductoService.crearUno(paramBody)
             } catch (e){

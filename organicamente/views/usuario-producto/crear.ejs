@@ -9,7 +9,7 @@
 
     <% const existeProductoId = typeof productoProductoId !== 'undefined'%>
     <label for="productoProductoId">Producto:</label>
-    <input id="productoProductoId" type="text" name="productoProductoId" value="<%= existeProductoId ? productoProductoId: '' %>">
+    <input id="productoProductoId" type="text" name="producto" value="<%= existeProductoId ? productoProductoId: '' %>">
     <br>
     <% const existeStock = typeof stock !== 'undefined'%>
     <label for="stock">Stock:</label>
@@ -21,11 +21,11 @@
     <br>
     <% const existeUnidadId = typeof unidadUnidadId !== 'undefined'%>
     <label for="unidadUnidadId">Unidad:</label>
-    <input id="unidadUnidadId" type="text" name="unidadUnidadId" value="<%= existeUnidadId ? unidadUnidadId: '' %>">
+    <input id="unidadUnidadId" type="text" name="unidad" value="<%= existeUnidadId ? unidadUnidadId: '' %>">
     <br>
     <% const existeUsuarioId = typeof usuarioUsuarioId !== 'undefined'%>
     <label for="usuarioUsuarioId">Usuario:</label>
-    <input id="usuarioUsuarioId" type="text" name="usuarioUsuarioId" value="<%= existeUsuarioId ? usuarioUsuarioId: '' %>">
+    <input id="usuarioUsuarioId" type="text" name="usuario" value="<%= existeUsuarioId ? usuarioUsuarioId: '' %>">
     <br>
 
     <button type="submit">SUBMIT</button>

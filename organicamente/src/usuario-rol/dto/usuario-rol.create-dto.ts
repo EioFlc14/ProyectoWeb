@@ -1,18 +1,16 @@
-import {IsNotEmpty, IsNumber, IsPositive} from "class-validator";
+import {IsNotEmpty, IsNumber, IsNumberString, IsPositive} from "class-validator";
 
 
 export class UsuarioRolCreateDto{
 
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    usuarioId: number
+    @IsNumberString()
+    usuarioId: string
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    rolId: number
+    @IsNumberString()
+    rolId: string
 
 
 }

@@ -6,6 +6,9 @@
     </button>
 </a>
 
+<% if(typeof parametrosConsulta != 'undefined') {%>
+    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
+<% }%>
 
 <table>
     <tr>
@@ -13,7 +16,7 @@
         <th>FECHA</th>
         <th>TOTAL</th>
         <th>CUMPLIDO</th>
-        <th>USUARIO ID</th>
+        <th>USUARIO</th>
     </tr>
 
     <% arregloFacturas.forEach((objeto) => { %>
@@ -22,10 +25,13 @@
                 <td><%= objeto.fecha %> </td>
                 <td><%= objeto.total %> </td>
                 <td><%= objeto.cumplido %> </td>
-                <td><%= objeto.usuarioUsuarioId %> </td>
+                <td><%= objeto.usuario.nombre %> </td>
                 <td>
                     <button>Ver</button>
-                    <button>Editar</button>
+                    <a href="/factura/vista/editar/<%=objeto.facturaId%>">
+                        <button>Editar</button>
+                    </a>
+
                     <form action="/factura/eliminarDesdeVista/<%= objeto.facturaId %>" method="post">
                         <button>Eliminar</button>
                     </form>

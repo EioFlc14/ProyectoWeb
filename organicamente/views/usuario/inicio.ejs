@@ -6,6 +6,11 @@
     </button>
 </a>
 
+<% if(typeof parametrosConsulta != 'undefined') {%>
+    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
+<% }%>
+
+
 <table>
     <tr>
         <th>Nombre</th>
@@ -30,7 +35,11 @@
             <td><%= objeto.identificacion %></td>
             <td>
                 <button>Ver</button>
-                <button>Editar</button>
+
+                <a href="/usuario/vista/editar/<%=objeto.usuarioId%>">
+                    <button>Editar</button>
+                </a>
+
                 <form action="/usuario/eliminarDesdeVista/<%= objeto.usuarioId %>" method="post">
                     <button>Eliminar</button>
                 </form>

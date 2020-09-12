@@ -79,4 +79,7 @@ export class UsuarioProductoEntity {
     )
     usuario: UsuarioEntity
 
+
+    // LAS NOMBRES DE ESTOS ATRIBUTOS DEBEN ESTAR IGUAL QUE EL NAME DEL TAG HTML QUE LE MANDA
+
 }

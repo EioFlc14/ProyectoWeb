@@ -18,11 +18,11 @@ export class FacturaService{
     }
 
     buscarTodos(){
-        return this.repositorio.find()
+        return this.repositorio.find({relations:['usuario']})
     }
 
     buscarUno(id: number){
-        return this.repositorio.findOne(id)
+        return this.repositorio.findOne(id,{relations:['usuario']})
     }
 
     editarUno(facturaEditada: FacturaEntity){

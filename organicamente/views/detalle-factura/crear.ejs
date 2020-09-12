@@ -19,13 +19,13 @@
     <label for="valor">Valor:</label>
     <input id="valor" type="text" name="valor" value="<%= existeValor ? valor: '' %>">
     <br>
-    <% const existeUsuarioProductoId = typeof usuarioId !== 'undefined'%>
+    <% const existeUsuarioProductoId = typeof usuarioProductoId !== 'undefined'%>
     <label for="usuarioProductoId">Usuario:</label>
-    <input id="usuarioProductoId" type="text" name="usuarioProductoUsuarioProductoId" value="<%= existeUsuarioProductoId ? usuarioId: '' %>">
+    <input id="usuarioProductoId" type="text" name="usuarioProducto" value="<%= existeUsuarioProductoId ? usuarioProductoId: '' %>">
     <br>
     <% const existeFacturaId = typeof facturaId !== 'undefined'%>
     <label for="facturaId">Factura:</label>
-    <input id="facturaId" type="text" name="facturaFacturaId" value="<%= existeFacturaId ? facturaId: '' %>">
+    <input id="facturaId" type="text" name="factura" value="<%= existeFacturaId ? facturaId: '' %>">
     <br>
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>

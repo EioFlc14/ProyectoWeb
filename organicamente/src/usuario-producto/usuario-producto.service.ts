@@ -18,7 +18,7 @@ export class UsuarioProductoService{
     }
 
     buscarTodos(){
-        return this.repositorio.find()
+        return this.repositorio.find({relations:['producto','unidad','usuario']})
     }
 
     buscarUno(id: number){

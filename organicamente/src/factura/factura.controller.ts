@@ -14,6 +14,10 @@ import {UsuarioCreateDto} from "../usuario/dto/usuario.create-dto";
 import {validate, ValidationError} from "class-validator";
 import {FacturaService} from "./factura.service";
 import {FacturaCreateDto} from "./dto/factura.create-dto";
+import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
+import {UsuarioEntity} from "../usuario/usuario.entity";
+import {FacturaUpdateDto} from "./dto/factura.update-dto";
+import {FacturaEntity} from "./factura.entity";
 
 
 @Controller('factura')
@@ -57,7 +61,7 @@ export class FacturaController{
                 total: parametrosConsulta.total,
                 fecha: parametrosConsulta.fecha,
                 cumplido: parametrosConsulta.cumplido,
-                usuario: parametrosConsulta.usuarioUsuarioId,
+                usuario: parametrosConsulta.usuario,
             })
     }
 
@@ -72,12 +76,12 @@ export class FacturaController{
         facturaValidada.total = paramBody.total
         facturaValidada.fecha = paramBody.fecha
         facturaValidada.cumplido = paramBody.cumplido
-        facturaValidada.usuarioId = paramBody.usuarioUsuarioId
+        facturaValidada.usuarioId = paramBody.usuario
 
         console.log(paramBody)
 
         const errores: ValidationError[] = await validate(facturaValidada)
-        const texto = `&total=${paramBody.total}&fecha=${paramBody.fecha}&cumplido=${paramBody.cumplido}&usuarioUsuarioId=${paramBody.usuarioUsuarioId}`
+        const texto = `&total=${paramBody.total}&fecha=${paramBody.fecha}&cumplido=${paramBody.cumplido}&usuario=${paramBody.usuario}`
         if(errores.length > 0){
             console.error('Errores:',errores);
             const error = 'Error en el formato de los datos'
@@ -100,6 +104,80 @@ export class FacturaController{
         }
 
     }
+
+
+    @Get('vista/editar/:id') // Controlador
+    async editarFacturaVista(
+        @Query() parametrosConsulta,
+        @Res() res,
+        @Param() parametrosRuta
+    ) {
+        const id = Number(parametrosRuta.id)
+        let facturaEncontrado
+
+        try {
+            facturaEncontrado = await this._facturaService.buscarUno(id)
+        } catch (error) {
+            console.error('Error del servidor')
+            return res.redirect('/factura/vista/inicio?mensaje=Error buscando factura')
+        }
+
+        if (facturaEncontrado){
+            console.log(facturaEncontrado)
+            return res.render(
+                'factura/crear',
+                {
+                    error: parametrosConsulta.error,
+                    factura: facturaEncontrado
+                }
+            )
+        } else {
+            return res.redirect('/factura/vista/inicio?mensaje=Factura no encontrado')
+        }
+
+    }
+
+
+
+
+   @Post('editarDesdeVista/:id')
+    async editarDesdeVista(
+        @Param() parametrosRuta,
+        @Body() paramBody,
+        @Res() res
+    ){
+        const facturaValidada = new FacturaUpdateDto()
+        facturaValidada.id = Number(parametrosRuta.id)
+        facturaValidada.fecha = paramBody.fecha
+        facturaValidada.total = paramBody.total
+        facturaValidada.cumplido = paramBody.cumplido
+        facturaValidada.usuarioId = paramBody.usuario.usuarioId
+
+        const errores: ValidationError[] = await validate(facturaValidada)
+        if(errores.length > 0){
+            console.error('Errores:',errores);
+            const error = 'Error en el formato de los datos'
+            return res.redirect('/factura/vista/inicio?mensaje='+error)
+        } else {
+
+            const facturaEditado = {
+                facturaId: Number(parametrosRuta.id),
+                cumplido : paramBody.cumplido,
+            } as FacturaEntity
+
+            try {
+                await this._facturaService.editarUno(facturaEditado)
+                return res.redirect('/factura/vista/inicio?mensaje= Factura editada correctamente') // en caso de que all esté OK se envía al inicio
+            } catch (e){
+                console.error(e)
+                const errorCreacion = 'Error editando Factura'
+                return res.redirect('/factura/vista/inicio?mensaje='+errorCreacion)
+            }
+        }
+
+    }
+
+
 
     @Post('eliminarDesdeVista/:id') // ESTA NO SE DEBE IMPLEMENTAR YA QUE NO SE PUEDE ELIMINAR UNA FACTURA PERO SE LA HIZO IGUALMENTE
     async eliminarDesdeVista(

@@ -11,6 +11,8 @@ import {
 import {UsuarioService} from "./usuario.service";
 import {UsuarioCreateDto} from "./dto/usuario.create-dto";
 import {validate, ValidationError} from "class-validator";
+import {UsuarioUpdateDto} from "./dto/usuario.update-dto";
+import {UsuarioEntity} from "./usuario.entity";
 
 
 @Controller('usuario')
@@ -24,7 +26,8 @@ export class UsuarioController{
 
     @Get('vista/inicio') // poner la direccion
     async obtenerUsuarios(
-        @Res() res
+        @Res() res,
+        @Query() parametrosConsulta
     ) {
         let resultadoEncontrado
         try {
@@ -35,7 +38,7 @@ export class UsuarioController{
 
         if(resultadoEncontrado){
             console.log(resultadoEncontrado)
-            return res.render('usuario/inicio', {arregloUsuarios: resultadoEncontrado}) // con esto mando resultadoEcontrado hasta usuario/inicio
+            return res.render('usuario/inicio', {arregloUsuarios: resultadoEncontrado, parametrosConsulta: parametrosConsulta}) // con esto mando resultadoEcontrado hasta usuario/inicio
         } else {
             throw new NotFoundException('NO se encontraron usuarios')
         }
@@ -104,6 +107,87 @@ export class UsuarioController{
     }
 
 
+    @Get('vista/editar/:id') // Controlador
+    async editarUsuarioVista(
+        @Query() parametrosConsulta,
+        @Res() res,
+        @Param() parametrosRuta
+    ) {
+        const id = Number(parametrosRuta.id)
+        let usuarioEncontrado
+
+        try {
+            usuarioEncontrado = await this._usuarioService.buscarUno(id)
+        } catch (error) {
+            console.error('Error del servidor')
+            return res.redirect('/usuario/vista/inicio?mensaje=Error buscando usuario')
+        }
+
+        if (usuarioEncontrado){
+            return res.render(
+                'usuario/crear',
+                {
+                    error: parametrosConsulta.error,
+                    usuario: usuarioEncontrado
+                }
+            )
+        } else {
+            return res.redirect('/usuario/vista/inicio?mensaje=Usuario no encontrado')
+        }
+
+    }
+
+
+    @Post('editarDesdeVista/:id')
+    async editarDesdeVista(
+        @Param() parametrosRuta,
+        @Body() paramBody,
+        @Res() res
+    ){
+
+        const usuarioValidado = new UsuarioUpdateDto()
+        usuarioValidado.id = Number(parametrosRuta.id)
+        usuarioValidado.nombre = paramBody.nombre
+        usuarioValidado.apellido = paramBody.apellido
+        usuarioValidado.email = paramBody.email
+        usuarioValidado.telefono = paramBody.telefono
+        usuarioValidado.direccion = paramBody.direccion
+        usuarioValidado.username = paramBody.username
+        usuarioValidado.password = paramBody.password
+        usuarioValidado.identificacion = paramBody.identificacion
+
+        const errores: ValidationError[] = await validate(usuarioValidado)
+        if(errores.length > 0){
+            console.error('Errores:',errores);
+            return res.redirect('/usuario/vista/inicio?mensaje= Erro en el formato de los datos')
+        } else {
+
+            const usuarioEditado = {
+                usuarioId: Number(parametrosRuta.id),
+                nombre: paramBody.nombre,
+                apellido : paramBody.apellido,
+                email : paramBody.email,
+                telefono : paramBody.telefono,
+                direccion : paramBody.direccion,
+                username : paramBody.username,
+                password : paramBody.password,
+                identificacion : paramBody.identificacion
+            } as UsuarioEntity
+
+            try {
+                await this._usuarioService.editarUno(usuarioEditado)
+                return res.redirect('/usuario/vista/inicio?mensaje= Usuario editado correctamente') // en caso de que all esté OK se envía al inicio
+            } catch (e){
+                console.error(e)
+                const errorCreacion = 'Error editando Usuario'
+                return res.redirect('/usuario/vista/inicio?mensaje='+errorCreacion)
+            }
+        }
+
+    }
+
+
+
     @Post('eliminarDesdeVista/:id')
     async eliminarDesdeVista(
         @Param() paramRuta,
@@ -117,9 +201,6 @@ export class UsuarioController{
             return res.redirect('/usuario/vista/inicio?error=Error eliminando usuario')
         }
     }
-
-
-
 
 
 }
