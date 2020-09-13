@@ -1,4 +1,4 @@
-import {IsNotEmpty, IsNumber, IsPositive, Max} from "class-validator";
+import {IsNotEmpty, IsNumber, IsPositive, Max, MaxLength} from "class-validator";
 
 
 export class UnidadUpdateDto{
@@ -9,7 +9,7 @@ export class UnidadUpdateDto{
     id:number
 
     @IsNotEmpty()
-    @Max(30)
+    @MaxLength(30)
     nombre:string
 
 }

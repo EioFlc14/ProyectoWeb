@@ -7,9 +7,14 @@
     </button>
 </a>
 
+<% if(typeof parametrosConsulta != 'undefined') {%>
+    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
+<% }%>
+
 <table>
     <tr>
         <th>Nombre</th>
+        <th>Acciones</th>
         <!--   ESTO ES PARA UNA VISTA DE ADMINISTRADOR YA QUE SOLO INGRESA LOS ROLES -->
     </tr>
 
@@ -18,7 +23,9 @@
             <td><%= objeto.nombre %></td>
             <td>
                 <button>Ver</button>
-                <button>Editar</button>
+                <a href="/rol/vista/editar/<%=objeto.rolId%>">
+                    <button>Editar</button>
+                </a>
                 <form action="/rol/eliminarDesdeVista/<%= objeto.rolId %>" method="post">
                     <button>Eliminar</button>
                 </form>

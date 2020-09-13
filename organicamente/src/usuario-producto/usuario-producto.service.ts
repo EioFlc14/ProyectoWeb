@@ -22,7 +22,7 @@ export class UsuarioProductoService{
     }
 
     buscarUno(id: number){
-        return this.repositorio.findOne(id)
+        return this.repositorio.findOne(id, {relations:['producto','unidad','usuario']})
     }
 
     editarUno(usuarioProductoEditado:UsuarioProductoEntity){

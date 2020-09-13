@@ -97,7 +97,7 @@ export class UsuarioController{
             }
 
             if(respuestaCreacionUsuario){
-                return res.redirect('/usuario/vista/inicio') // en caso de que all esté OK se envía al inicio
+                return res.redirect('/usuario/vista/inicio?mensaje=Usuario creado correctamente') // en caso de que all esté OK se envía al inicio
             } else {
                 const errorCreacion = 'Error al crear el Usuario'
                 return res.redirect('/usuario/vista/crear?error='+errorCreacion+texto)
@@ -159,7 +159,7 @@ export class UsuarioController{
         const errores: ValidationError[] = await validate(usuarioValidado)
         if(errores.length > 0){
             console.error('Errores:',errores);
-            return res.redirect('/usuario/vista/inicio?mensaje= Erro en el formato de los datos')
+            return res.redirect('/usuario/vista/inicio?mensaje= Error en el formato de los datos')
         } else {
 
             const usuarioEditado = {

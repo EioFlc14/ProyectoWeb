@@ -1,4 +1,3 @@
-
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
 
 <a href="/unidad/vista/crear">
@@ -7,10 +6,14 @@
     </button>
 </a>
 
+<% if(typeof parametrosConsulta != 'undefined') {%>
+    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
+<% }%>
+
 <table>
     <tr>
         <th>Nombre</th>
-        <!--   ESTO ES PARA UNA VISTA DE ADMINISTRADOR YA QUE SOLO INGRESA LAS UNIDADES -->
+        <th>Acciones</th>
     </tr>
 
     <% arregloUnidades.forEach((objeto) => { %>
@@ -18,7 +21,9 @@
             <td><%= objeto.nombre %></td>
             <td>
                 <button>Ver</button>
-                <button>Editar</button>
+                <a href="/unidad/vista/editar/<%=objeto.unidadId%>">
+                    <button>Editar</button>
+                </a>
                 <form action="/unidad/eliminarDesdeVista/<%= objeto.unidadId %>" method="post">
                     <button>Eliminar</button>
                 </form>

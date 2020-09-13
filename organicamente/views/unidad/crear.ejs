@@ -1,20 +1,30 @@
-<h1>CREAR UNIDAD</h1>
+<% const existeUnidad = typeof unidad != 'undefined'%>
+
+<% let existeNombre = typeof nombre !== 'undefined'%>
 
 
-<% if(typeof error != 'undefined'){%>
-    <p> MENSAJE: <%= error %></p>
+<h1> <%= existeUnidad ? 'Editar': 'Crear' %> unidad</h1>
+
+<% if(existeUnidad) {%>
+    <% existeNombre = true %>
+
+    <% nombre = unidad.nombre%>
+<%}%>
+
+<% if(typeof mensaje != 'undefined'){%>
+    <p> MENSAJE: <%= mensaje %></p>
 <% }%>
 
-<form action="/unidad/crearDesdeVista" method="POST">
-    <% const existeNombre = typeof nombre !== 'undefined'%>
+<form action=" <%= existeNombre ? '/unidad/editarDesdeVista/' + unidad.unidadId : '/unidad/crearDesdeVista'%>" method="POST">
+
     <label for="nombre">Nombre:</label>
     <input id="nombre" type="text" name="nombre" value="<%= existeNombre ? nombre: '' %>">
     <br>
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>
     <button type="button">BUTTON</button>
-    <button>adf</button>
 
 </form>
+
 
 

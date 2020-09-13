@@ -112,6 +112,8 @@ export class DetalleFacturaController{
     }
 
 
+
+
     @Post('eliminarDesdeVista/:id')  // ESTA NO SE DEBE IMPLEMENTAR YA QUE NO SE PUEDE ELIMINAR UN DETALLE FACTURA PERO SE LA HIZO IGUALMENTE
     async eliminarDesdeVista(
         @Param() paramRuta,

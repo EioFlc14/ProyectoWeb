@@ -15,6 +15,10 @@ import {UsuarioService} from "../usuario/usuario.service";
 import {UsuarioProductoService} from "./usuario-producto.service";
 import {ImagenService} from "../imagen/imagen.service";
 import {UsuarioProductoCreateDto} from "./dto/usuario-producto.create-dto";
+import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
+import {UsuarioEntity} from "../usuario/usuario.entity";
+import {UsuarioProductoUpdateDto} from "./dto/usuario-producto.update-dto";
+import {UsuarioProductoEntity} from "./usuario-producto.entity";
 
 @Controller('usuario-producto')
 export class UsuarioProductoController{
@@ -110,6 +114,77 @@ export class UsuarioProductoController{
             }
         }
     }
+
+
+    @Get('vista/editar/:id') // Controlador
+    async editarUsuarioVista(
+        @Query() parametrosConsulta,
+        @Res() res,
+        @Param() parametrosRuta
+    ) {
+        const id = Number(parametrosRuta.id)
+        let usuarioProductoEncontrado
+
+        try {
+            usuarioProductoEncontrado = await this._usuarioProductoService.buscarUno(id)
+        } catch (error) {
+            console.error('Error del servidor')
+            return res.redirect('/usuario-producto/vista/inicio?mensaje=Error buscando usuario producto')
+        }
+
+        if (usuarioProductoEncontrado){
+            return res.render(
+                'usuario-producto/crear',
+                {
+                    error: parametrosConsulta.error,
+                    usuarioProducto: usuarioProductoEncontrado
+                }
+            )
+        } else {
+            return res.redirect('/usuario-producto/vista/inicio?mensaje=Usuario Producto no encontrado')
+        }
+
+    }
+
+
+
+
+    @Post('editarDesdeVista/:id')
+    async editarDesdeVista(
+        @Param() parametrosRuta,
+        @Body() paramBody,
+        @Res() res
+    ){
+
+        const usuarioProductoValidado = new UsuarioProductoUpdateDto()
+        usuarioProductoValidado.id = Number(parametrosRuta.id)
+        usuarioProductoValidado.stock = paramBody.stock
+        usuarioProductoValidado.precio = paramBody.precio
+
+
+        const errores: ValidationError[] = await validate(usuarioProductoValidado)
+        if(errores.length > 0){
+            console.error('Errores:',errores);
+            return res.redirect('/usuario-producto/vista/inicio?mensaje= Error en el formato de los datos')
+        } else {
+
+            const usuarioProducto = {
+                usuarioProductoId: Number(parametrosRuta.id),
+                stock: paramBody.stock,
+                precio: paramBody.precio,
+            } as UsuarioProductoEntity
+
+            try {
+                await this._usuarioProductoService.editarUno(usuarioProducto)
+                return res.redirect('/usuario-producto/vista/inicio?mensaje= Usuario Producto editado correctamente') // en caso de que all esté OK se envía al inicio
+            } catch (e){
+                console.error(e)
+                const errorCreacion = 'Error editando Usuario Producto'
+                return res.redirect('/usuario-producto/vista/inicio?mensaje='+errorCreacion)
+            }
+        }
+    }
+
 
 
     @Post('eliminarDesdeVista/:id')

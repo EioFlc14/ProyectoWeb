@@ -1,19 +1,28 @@
-<h1>CREAR PRODUCTO</h1>
+<% const existeProducto = typeof producto != 'undefined'%>
 
+<% let existeNombre = typeof nombre !== 'undefined'%>
+
+
+<h1> <%= existeProducto ? 'Editar': 'Crear' %> producto</h1>
+
+<% if(existeProducto) {%>
+    <% existeNombre = true %>
+
+    <% nombre = producto.nombre%>
+<%}%>
 
 <% if(typeof error != 'undefined'){%>
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action="/producto/crearDesdeVista" method="POST">
-    <% const existeNombre = typeof nombre !== 'undefined'%>
+<form action=" <%= existeNombre ? '/producto/editarDesdeVista/' + producto.productoId : '/producto/crearDesdeVista'%>" method="POST">
+
     <label for="nombre">Nombre:</label>
     <input id="nombre" type="text" name="nombre" value="<%= existeNombre ? nombre: '' %>">
     <br>
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>
     <button type="button">BUTTON</button>
-    <button>adf</button>
 
 </form>
 

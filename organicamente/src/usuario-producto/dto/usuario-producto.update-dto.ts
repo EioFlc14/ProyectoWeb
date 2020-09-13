@@ -9,16 +9,15 @@ export class UsuarioProductoUpdateDto {
     id: number
 
     @IsNotEmpty()
-    @IsNumber()
-    stock:number
+    @IsNumberString()
+    stock:string
 
     @IsNotEmpty()
     @IsNumberString()
-    @IsDecimal({'decimal_digits': '0,3'})
-    precio:number
+    precio:string
 
 
-    @IsNotEmpty()
+    /*@IsNotEmpty()
     @IsPositive()
     @IsNumber()
     productoId:number
@@ -31,7 +30,7 @@ export class UsuarioProductoUpdateDto {
     @IsNotEmpty()
     @IsPositive()
     @IsNumber()
-    unidadId:number
+    unidadId:number */
 
 
 }

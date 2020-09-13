@@ -1,31 +1,70 @@
-<h1>CREAR PRODUCTO DE USUARIO</h1>
+<% const existeUsuarioProducto = typeof usuarioProducto != 'undefined'%>
+
+<% let existeProducto = typeof producto !== 'undefined'%>
+<% let existeStock = typeof stock !== 'undefined'%>
+<% let existePrecio = typeof precio !== 'undefined'%>
+<% let existeUnidad = typeof unidad !== 'undefined'%>
+<% let existeUsuario = typeof usuario !== 'undefined'%>
+
+
+<h1> <%= existeUsuarioProducto ? 'Editar': 'Crear' %> usuario producto</h1>
+
+<% if(existeUsuarioProducto) {%>
+    <% existeProducto = true %>
+    <% existeStock = true %>
+    <% existePrecio = true %>
+    <% existeUnidad = true %>
+    <% existeUsuario = true %>
+
+    <% producto = usuarioProducto.producto.nombre%>
+    <% stock = usuarioProducto.stock %>
+    <% precio = usuarioProducto.precio %>
+    <% unidad = usuarioProducto.unidad.nombre %>
+    <% usuario = usuarioProducto.usuario.username%>
+
+<%}%>
+
 
 
 <% if(typeof error != 'undefined'){%>
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action="/usuario-producto/crearDesdeVista" method="POST">
+<form action=" <%= existeUsuarioProducto ? '/usuario-producto/editarDesdeVista/' + usuarioProducto.usuarioProductoId : '/usuario-producto/crearDesdeVista'%>" method="POST">
 
-    <% const existeProductoId = typeof productoProductoId !== 'undefined'%>
     <label for="productoProductoId">Producto:</label>
-    <input id="productoProductoId" type="text" name="producto" value="<%= existeProductoId ? productoProductoId: '' %>">
+    <input id="productoProductoId"
+           type="text"
+           <% if(existeUsuarioProducto) {%>
+                disabled
+           <%}%>
+           name="producto" value="<%= existeProducto ? producto: '' %>">
     <br>
-    <% const existeStock = typeof stock !== 'undefined'%>
+
     <label for="stock">Stock:</label>
     <input id="stock" type="number" name="stock" value="<%= existeStock ? stock: '' %>">
     <br>
-    <% const existePrecio = typeof precio !== 'undefined'%>
+
     <label for="precio">Precio:</label>
     <input id="precio" type="text" name="precio" value="<%= existePrecio ? precio: '' %>">
     <br>
-    <% const existeUnidadId = typeof unidadUnidadId !== 'undefined'%>
+
     <label for="unidadUnidadId">Unidad:</label>
-    <input id="unidadUnidadId" type="text" name="unidad" value="<%= existeUnidadId ? unidadUnidadId: '' %>">
+    <input id="unidadUnidadId"
+           type="text"
+           <% if(existeUsuarioProducto) {%>
+               disabled
+           <%}%>
+           name="unidad" value="<%= existeUnidad ? unidad: '' %>">
     <br>
-    <% const existeUsuarioId = typeof usuarioUsuarioId !== 'undefined'%>
+
     <label for="usuarioUsuarioId">Usuario:</label>
-    <input id="usuarioUsuarioId" type="text" name="usuario" value="<%= existeUsuarioId ? usuarioUsuarioId: '' %>">
+    <input id="usuarioUsuarioId"
+           type="text"
+           <% if(existeUsuarioProducto) {%>
+                disabled
+            <%}%>
+           name="usuario" value="<%= existeUsuario ? usuario: '' %>">
     <br>
 
     <button type="submit">SUBMIT</button>

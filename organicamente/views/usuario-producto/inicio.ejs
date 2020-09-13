@@ -25,7 +25,9 @@
             <td><%= objeto.usuario.username%></td>
             <td>
                 <button>Ver</button>
-                <button>Editar</button>
+                <a href="/usuario-producto/vista/editar/<%=objeto.usuarioProductoId%>">
+                    <button>Editar</button>
+                </a>
                 <form action="/usuario-producto/eliminarDesdeVista/<%= objeto.usuarioProductoId %>" method="post">
                     <button>Eliminar</button>
                 </form>

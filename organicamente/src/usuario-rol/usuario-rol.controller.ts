@@ -14,6 +14,10 @@ import {UnidadCreateDto} from "../unidad/dto/unidad.create-dto";
 import {validate, ValidationError} from "class-validator";
 import {UsuarioRolService} from "./usuario-rol.service";
 import {UsuarioRolCreateDto} from "./dto/usuario-rol.create-dto";
+import {UsuarioProductoUpdateDto} from "../usuario-producto/dto/usuario-producto.update-dto";
+import {UsuarioProductoEntity} from "../usuario-producto/usuario-producto.entity";
+import {UsuarioRolUpdateDto} from "./dto/usuario-rol.update-dto";
+import {UsuarioRolEntity} from "./usuario-rol.entity";
 
 @Controller('usuario-rol')
 export class UsuarioRolController{
@@ -82,7 +86,7 @@ export class UsuarioRolController{
             }
 
             if(respuestaCreacionUsuarioRol){
-                return res.redirect('/usuario-rol/vista/inicio') // en caso de que all esté OK se envía al inicio
+                return res.redirect('/usuario-rol/vista/inicio?mensaje=Creado exitosamente') // en caso de que all esté OK se envía al inicio
             } else {
                 const errorCreacion = 'Error al crear el Usuario Rol'
                 return res.redirect('/usuario-rol/vista/crear?error='+errorCreacion+texto)
@@ -90,6 +94,8 @@ export class UsuarioRolController{
         }
 
     }
+
+
 
 
     @Post('eliminarDesdeVista/:id')

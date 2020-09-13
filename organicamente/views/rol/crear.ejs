@@ -1,14 +1,24 @@
-<h1>CREAR ROL</h1>
+<% const existeRol = typeof rol !== 'undefined'%>
 
+<% let existeNombre = typeof nombre !== 'undefined'%>
+
+<h1> <%= existeNombre ? 'Editar': 'Crear' %> rol</h1>
+
+<% if(existeRol) {%>
+    <% existeNombre = true %>
+
+    <% nombre = rol.nombre%>
+
+<%}%>
 
 <% if(typeof error != 'undefined'){%>
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action="/rol/crearDesdeVista" method="POST">
-    <% const existeNombre = typeof nombre !== 'undefined'%>
+<form action=" <%= existeRol ? '/rol/editarDesdeVista/' + rol.rolId : '/rol/crearDesdeVista'%>" method="POST">
+
     <label for="nombre">Nombre:</label>
-    <input id="nombre" type="text" name="nombre" value="<%= existeNombre ? nombre: '' %>">
+    <input id="nombre" type="text" name="nombre" value="<%= existeRol ? nombre: '' %>">
     <br>
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>

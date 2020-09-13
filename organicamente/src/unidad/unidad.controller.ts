@@ -14,6 +14,10 @@ import {ProductoCreateDto} from "../producto/dto/producto.create-dto";
 import {validate, ValidationError} from "class-validator";
 import {UnidadService} from "./unidad.service";
 import {UnidadCreateDto} from "./dto/unidad.create-dto";
+import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
+import {UsuarioEntity} from "../usuario/usuario.entity";
+import {UnidadUpdateDto} from "./dto/unidad.update-dto";
+import {UnidadEntity} from "./unidad.entity";
 
 @Controller('unidad')
 export class UnidadController{
@@ -88,6 +92,74 @@ export class UnidadController{
         }
 
     }
+
+
+    @Get('vista/editar/:id') // Controlador
+    async editarUnidadVista(
+        @Query() parametrosConsulta,
+        @Res() res,
+        @Param() parametrosRuta
+    ) {
+        const id = Number(parametrosRuta.id)
+        let unidadEncontrado
+
+        try {
+            unidadEncontrado = await this._unidadService.buscarUno(id)
+        } catch (error) {
+            console.error('Error del servidor')
+            return res.redirect('/unidad/vista/inicio?mensaje=Error buscando unidad')
+        }
+
+        if (unidadEncontrado){
+            return res.render(
+                'unidad/crear',
+                {
+                    error: parametrosConsulta.error,
+                    unidad: unidadEncontrado
+                }
+            )
+        } else {
+            return res.redirect('/unidad/vista/inicio?mensaje=Unidad no encontrada')
+        }
+    }
+
+
+
+    @Post('editarDesdeVista/:id')
+    async editarDesdeVista(
+        @Param() parametrosRuta,
+        @Body() paramBody,
+        @Res() res
+    ){
+
+        const unidadValidada = new UnidadUpdateDto()
+        unidadValidada.id = Number(parametrosRuta.id)
+        unidadValidada.nombre = paramBody.nombre
+
+
+        const errores: ValidationError[] = await validate(unidadValidada)
+        if(errores.length > 0){
+            console.error('Errores:',errores);
+            return res.redirect('/unidad/vista/inicio?mensaje= Error en el formato de los datos')
+        } else {
+
+            const unidadEditada = {
+                unidadId: Number(parametrosRuta.id),
+                nombre: paramBody.nombre,
+            } as UnidadEntity
+
+            try {
+                await this._unidadService.editarUno(unidadEditada)
+                return res.redirect('/unidad/vista/inicio?mensaje= Unidad editada correctamente') // en caso de que all esté OK se envía al inicio
+            } catch (e){
+                console.error(e)
+                const errorCreacion = 'Error editando Unidad'
+                return res.redirect('/unidad/vista/inicio?mensaje='+errorCreacion)
+            }
+        }
+
+    }
+
 
 
     @Post('eliminarDesdeVista/:id')

@@ -1,4 +1,4 @@
-import {IsNotEmpty, IsNumber, IsPositive} from "class-validator";
+import {IsNotEmpty, IsNumber, IsNumberString, IsPositive} from "class-validator";
 
 
 export class UsuarioRolUpdateDto{
@@ -9,9 +9,8 @@ export class UsuarioRolUpdateDto{
     id: number
 
     @IsNotEmpty()
-    @IsPositive()
-    @IsNumber()
-    usuarioId: number
+    @IsNumberString()
+    usuarioId: string
 
     @IsNotEmpty()
     @IsPositive()
