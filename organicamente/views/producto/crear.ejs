@@ -15,7 +15,7 @@
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action=" <%= existeNombre ? '/producto/editarDesdeVista/' + producto.productoId : '/producto/crearDesdeVista'%>" method="POST">
+<form action=" <%= existeProducto ? '/producto/editarDesdeVista/' + producto.productoId : '/producto/crearDesdeVista'%>" method="POST">
 
     <label for="nombre">Nombre:</label>
     <input id="nombre" type="text" name="nombre" value="<%= existeNombre ? nombre: '' %>">

@@ -13,6 +13,7 @@
         <th>Precio</th>
         <th>Unidad</th>
         <th>Usuario</th>
+        <th>Imagen</th>
 
     </tr>
 
@@ -23,6 +24,7 @@
             <td><%= objeto.precio %></td>
             <td><%= objeto.unidad.nombre%></td>
             <td><%= objeto.usuario.username%></td>
+            <td><%= objeto.imagen %></td>
             <td>
                 <button>Ver</button>
                 <a href="/usuario-producto/vista/editar/<%=objeto.usuarioProductoId%>">

@@ -3,6 +3,8 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm/index";
 import {UsuarioProductoEntity} from "./usuario-producto.entity";
 
+
+
 @Injectable()
 export class UsuarioProductoService{
 

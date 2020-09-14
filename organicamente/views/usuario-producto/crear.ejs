@@ -30,7 +30,7 @@
     <p> MENSAJE: <%= error %></p>
 <% }%>
 
-<form action=" <%= existeUsuarioProducto ? '/usuario-producto/editarDesdeVista/' + usuarioProducto.usuarioProductoId : '/usuario-producto/crearDesdeVista'%>" method="POST">
+<form action=" <%= existeUsuarioProducto ? '/usuario-producto/editarDesdeVista/' + usuarioProducto.usuarioProductoId : '/usuario-producto/crearDesdeVista'%>" method="POST" enctype="multipart/form-data">
 
     <label for="productoProductoId">Producto:</label>
     <input id="productoProductoId"
@@ -67,11 +67,23 @@
            name="usuario" value="<%= existeUsuario ? usuario: '' %>">
     <br>
 
-    <button type="submit">SUBMIT</button>
+    <label for="imagen">Imagen:</label>
+    <input type="file" id="imagen" name="imagen" accept="image/*">
+    <br >
+
+
+<!--   <script>
+     document.querySelector("#imagenProducto")
+                .addEventListener("change", function (){
+                    console.log(this.files)
+                });
+
+    </script>-->
+
+
+    <button type="submit" >SUBMIT</button>
     <button type="reset">RESET</button>
     <button type="button">BUTTON</button>
-    <button>adf</button>
+    <button >adf</button>
 
 </form>
-
-

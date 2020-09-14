@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import {DetalleFacturaModule} from "./detalle-factura/detalle-factura.module";
 import {FacturaModule} from "./factura/factura.module";
-import {ImagenModule} from "./imagen/imagen.module";
 import {ProductoModule} from "./producto/producto.module";
 import {RolModule} from "./rol/rol.module";
 import {UnidadModule} from "./unidad/unidad.module";
@@ -13,7 +12,6 @@ import {UsuarioRolModule} from "./usuario-rol/usuario-rol.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {DetalleFacturaEntity} from "./detalle-factura/detalle-factura.entity";
 import {FacturaEntity} from "./factura/factura.entity";
-import {ImagenEntity} from "./imagen/imagen.entity";
 import {ProductoEntity} from "./producto/producto.entity";
 import {RolEntity} from "./rol/rol.entity";
 import {UnidadEntity} from "./unidad/unidad.entity";
@@ -25,7 +23,6 @@ import {UsuarioRolEntity} from "./usuario-rol/usuario-rol.entity";
   imports: [
       DetalleFacturaModule,
       FacturaModule,
-      ImagenModule,
       ProductoModule,
       RolModule,
       UnidadModule,
@@ -43,7 +40,6 @@ import {UsuarioRolEntity} from "./usuario-rol/usuario-rol.entity";
         entities: [
             DetalleFacturaEntity,
             FacturaEntity,
-            ImagenEntity,
             ProductoEntity,
             RolEntity,
             UnidadEntity,

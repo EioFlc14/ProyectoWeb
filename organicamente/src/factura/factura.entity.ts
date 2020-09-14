@@ -19,7 +19,7 @@ export class FacturaEntity{
         name: 'total',
         type: "decimal",
         precision: 10, // enteros
-        scale: 4, // decimales
+        scale: 3, // decimales
         nullable: false,
     })
     total:string

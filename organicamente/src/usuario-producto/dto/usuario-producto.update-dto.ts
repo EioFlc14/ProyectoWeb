@@ -1,4 +1,4 @@
-import {IsDecimal, IsNotEmpty, IsNumber, IsNumberString, IsPositive} from "class-validator";
+import {IsDecimal, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPositive, MaxLength} from "class-validator";
 
 
 export class UsuarioProductoUpdateDto {
@@ -15,6 +15,9 @@ export class UsuarioProductoUpdateDto {
     @IsNotEmpty()
     @IsNumberString()
     precio:string
+
+    @IsOptional()
+    imagen?:string
 
 
     /*@IsNotEmpty()

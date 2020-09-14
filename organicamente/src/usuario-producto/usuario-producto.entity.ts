@@ -1,9 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 import {ManyToOne, OneToMany} from "typeorm/index";
 import {ProductoEntity} from "../producto/producto.entity";
-import {type} from "os";
 import {UnidadEntity} from "../unidad/unidad.entity";
-import {ImagenEntity} from "../imagen/imagen.entity";
 import {DetalleFacturaEntity} from "../detalle-factura/detalle-factura.entity";
 import {UsuarioEntity} from "../usuario/usuario.entity";
 import {FacturaEntity} from "../factura/factura.entity";
@@ -30,13 +28,19 @@ export class UsuarioProductoEntity {
     @Column({
         name: 'precio',
         type: "decimal",
-        precision: 5, // enteros
+        precision: 6, // enteros
         scale: 3, // decimales
         nullable: false,
     })
     precio: number
 
-    // ****************REVISAR LAS RELACIONES DE AQUÍIIIIIIIIIIIIIIIIIIII POR QUE SE ESTÁN METIENDO MAL
+
+    @Column({
+        name:'imagen',
+        type: 'varchar',
+        nullable: true
+    })
+    imagen?: string
 
     // RELACIONES
 
@@ -57,11 +61,11 @@ export class UsuarioProductoEntity {
 
 
     // usuario-producto - imagen
-    @OneToMany(
+    /* @OneToMany(
         type => ImagenEntity,
         imagen => imagen.usuarioProducto,
     )
-    imagenes: ImagenEntity[]
+    imagenes: ImagenEntity[] */
 
 
     // usuario-producto - detalle-factura

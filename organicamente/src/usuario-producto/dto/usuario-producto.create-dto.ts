@@ -1,4 +1,4 @@
-import {IsDecimal, IsNotEmpty, IsNumber, IsNumberString, IsPositive} from "class-validator";
+import {IsDecimal, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsPositive, MaxLength} from "class-validator";
 
 
 export class UsuarioProductoCreateDto{
@@ -12,6 +12,9 @@ export class UsuarioProductoCreateDto{
     @IsNumberString()
     @IsDecimal({'decimal_digits': '0,3'})
     precio:string
+
+    @IsOptional()
+    imagen?:string
 
 
     @IsNotEmpty()
