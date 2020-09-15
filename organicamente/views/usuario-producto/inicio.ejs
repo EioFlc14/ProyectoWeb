@@ -24,7 +24,7 @@
             <td><%= objeto.precio %></td>
             <td><%= objeto.unidad.nombre%></td>
             <td><%= objeto.usuario.username%></td>
-            <td><%= objeto.imagen %></td>
+            <td><img src="/imagenes/<%=objeto.imagen%>" width="400" height="300" /></td>
             <td>
                 <button>Ver</button>
                 <a href="/usuario-producto/vista/editar/<%=objeto.usuarioProductoId%>">

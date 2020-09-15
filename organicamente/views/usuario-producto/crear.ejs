@@ -1,3 +1,8 @@
+
+
+
+
+
 <% const existeUsuarioProducto = typeof usuarioProducto != 'undefined'%>
 
 <% let existeProducto = typeof producto !== 'undefined'%>
@@ -32,14 +37,19 @@
 
 <form action=" <%= existeUsuarioProducto ? '/usuario-producto/editarDesdeVista/' + usuarioProducto.usuarioProductoId : '/usuario-producto/crearDesdeVista'%>" method="POST" enctype="multipart/form-data">
 
-    <label for="productoProductoId">Producto:</label>
-    <input id="productoProductoId"
-           type="text"
-           <% if(existeUsuarioProducto) {%>
-                disabled
-           <%}%>
-           name="producto" value="<%= existeProducto ? producto: '' %>">
+    <% if(existeUsuarioProducto) {%>
+        <label for="productoProductoId">Producto:</label>
+        <input id="productoProductoId" type="text" disabled name="producto" value="<%= existeProducto ? producto: '' %>">
+    <%} else {%>
+        <label for="producto">Elija su producto</label>
+        <select name="producto" id="producto">
+            <% arregloProductos.forEach((objeto) => { %>
+                <option value="<%= objeto.producto_id%>"><%= objeto.nombre%></option>
+            <%})%>
+        </select>
+    <%}%>
     <br>
+
 
     <label for="stock">Stock:</label>
     <input id="stock" type="number" name="stock" value="<%= existeStock ? stock: '' %>">
@@ -49,21 +59,28 @@
     <input id="precio" type="text" name="precio" value="<%= existePrecio ? precio: '' %>">
     <br>
 
-    <label for="unidadUnidadId">Unidad:</label>
-    <input id="unidadUnidadId"
-           type="text"
-           <% if(existeUsuarioProducto) {%>
-               disabled
-           <%}%>
-           name="unidad" value="<%= existeUnidad ? unidad: '' %>">
+
+    <% if(existeUsuarioProducto) {%>
+        <label for="unidadUnidadId">Unidad:</label>
+        <input id="unidadUnidadId" type="text" disabled name="unidad" value="<%= existeUnidad ? unidad: '' %>">
+    <%} else {%>
+        <label for="unidad">Elija la unidad</label>
+        <select name="unidad" id="unidad">
+            <% arregloUnidades.forEach((objeto) => { %>
+                <option value="<%= objeto.unidad_id%>"><%= objeto.nombre%></option>
+            <%})%>
+        </select>
+    <%}%>
     <br>
+
+
 
     <label for="usuarioUsuarioId">Usuario:</label>
     <input id="usuarioUsuarioId"
            type="text"
-           <% if(existeUsuarioProducto) {%>
-                disabled
-            <%}%>
+    <% if(existeUsuarioProducto) {%>
+           disabled
+    <%}%>
            name="usuario" value="<%= existeUsuario ? usuario: '' %>">
     <br>
 
@@ -72,18 +89,12 @@
     <br >
 
 
-<!--   <script>
-     document.querySelector("#imagenProducto")
-                .addEventListener("change", function (){
-                    console.log(this.files)
-                });
-
-    </script>-->
-
-
     <button type="submit" >SUBMIT</button>
     <button type="reset">RESET</button>
     <button type="button">BUTTON</button>
     <button >adf</button>
 
 </form>
+
+
+

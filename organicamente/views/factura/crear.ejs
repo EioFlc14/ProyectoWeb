@@ -1,13 +1,10 @@
+<% const existeFactura = typeof factura !== 'undefined' %>
 
-
-<% const existeFactura = typeof factura !== 'undefined'%>
-
-<% let existeNumFactura = typeof numFactura !== 'undefined'%>
-<% let existeFecha = typeof fecha !== 'undefined'%>
-<% let existeTotal = typeof total !== 'undefined'%>
-<% let existeCumplido = typeof cumplido !== 'undefined'%>
-<% let existeUsuarioId = typeof usuarioId !== 'undefined'%>
-
+<% let existeNumFactura = typeof numFactura !== 'undefined' %>
+<% let existeFecha = typeof fecha !== 'undefined' %>
+<% let existeTotal = typeof total !== 'undefined' %>
+<% let existeCumplido = typeof cumplido !== 'undefined' %>
+<% let existeUsuario = typeof usuario !== 'undefined' %>
 
 <h1> <%= existeFactura ? 'Editar': 'Crear' %> factura</h1>
 
@@ -16,13 +13,19 @@
     <% existeFecha = true %>
     <% existeTotal = true %>
     <% existeCumplido = true %>
-    <% existeUsuarioId = true %>
+    <% existeUsuario = true %>
 
     <% numFactura = factura.facturaId %>
     <% fecha = factura.fecha %>
     <% total = factura.total %>
     <% cumplido = factura.cumplido %>
-    <% usuarioId = factura.usuario.usuarioId %>
+    <% usuario = factura.usuario.username %>
+    <% console.log("******************************************") %>
+    <% console.log(numFactura) %>
+    <% console.log(fecha) %>
+    <% console.log(total) %>
+    <% console.log(cumplido) %>
+    <% console.log(usuario) %>
 
 <%}%>
 
@@ -32,21 +35,37 @@
 <% }%>
 
 <form action=" <%= existeFactura ? '/factura/editarDesdeVista/' + factura.facturaId : '/factura/crearDesdeVista'%>" method="POST">
+<!--
     <% if(existeFactura) {%>
         <label for="numFactura">N° Factura:</label>
         <input id="numFactura" type="text" name="factura_id" disabled value="<%= existeNumFactura ? numFactura: '' %>">
     <%}%>
     <br>
+-->
 
-    <label for="fecha">Fecha:</label>
+<!--    <label for="fecha">Fecha:</label>
     <input id="fecha"
-           type="datetime-local"
+           type="text"
            name="fecha"
             <% if(existeFactura) {%>
                 disabled
             <%}%>
            value="<%= existeFecha ? fecha: '' %>">
-    <br>
+    <br>-->
+
+    <!--    <label for="cumplido">Cumplido:</label>
+    <input id="cumplido" type="text" name="cumplido" value="<%= existeCumplido ? cumplido: '' %>">
+    <br>-->
+
+    <!--    <label for="usuarioId">Usuario:</label>
+    <input id="usuarioId" type="text" name="usuario" value="<%= existeUsuario ? usuario : '' %>"
+            <% if(existeUsuario) {%>
+                disabled
+            <%}%>
+            >
+    <br>-->
+
+    <h3>Poner algún título pepa para que no se vea tan vacío</h3>
 
     <label for="total">Total:</label>
     <input id="total"
@@ -54,20 +73,45 @@
            <% if(existeFactura) {%>
                 disabled
            <%}%>
-           name="total" value="<%= existeTotal ? total: '' %>">
+           name="total" value=0.0>
     <br>
 
-    <label for="cumplido">Cumplido:</label>
-    <input id="cumplido" type="text" name="cumplido" value="<%= existeCumplido ? cumplido: '' %>">
-    <br>
 
-    <label for="usuarioId">Usuario:</label>
-    <input id="usuarioId" type="text"
-            <% if(existeFactura) {%>
-                disabled
-            <%}%>
-           name="usuario" value="<%= existeFactura ? usuarioId:''%>">
-    <br>
+    <table>
+        <tr>
+            <th>NOMBRE</th>
+<!--            <th>STOCK</th>  NO PONER PERO LO DEJO EN CASO DE QUE FALTE   -->
+            <th>PRECIO UNITARIO</th>
+            <th>UNIDAD DE VENTA</th>
+            <th>IMAGEN</th>
+            <th>VENDEDOR</th>
+            <th>ACCIONES</th>
+        </tr>
+
+        <% arregloUsuarioProductos.forEach((objeto) => { %>
+            <tr>
+                <td><%= objeto.producto.nombre %></td>
+                <td><%= objeto.precio %> </td>
+                <td><%= objeto.unidad.nombre %> </td>
+                <td><img src="/imagenes/<%= objeto.imagen %>" width="400" height="300" ></td>
+                <td><%= objeto.usuario.apellido + ' ' + objeto.usuario.nombre %> </td>
+                <td>
+
+                    <button>AÑADIR A COMPRA</button>
+                    <a href="/factura/vista/editar/<%=objeto.facturaId%>">
+                        <button>Editar</button>
+                    </a>
+
+                    <form action="/factura/eliminarDesdeVista/<%= objeto.facturaId %>" method="post">
+                        <button>Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        <% }) %>
+
+    </table>
+
+
     <button type="submit">SUBMIT</button>
     <button type="reset">RESET</button>
 

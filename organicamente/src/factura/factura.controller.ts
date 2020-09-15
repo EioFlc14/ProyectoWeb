@@ -9,13 +9,10 @@ import {
     Query,
     Res
 } from "@nestjs/common";
-import {UsuarioService} from "../usuario/usuario.service";
-import {UsuarioCreateDto} from "../usuario/dto/usuario.create-dto";
+
 import {validate, ValidationError} from "class-validator";
 import {FacturaService} from "./factura.service";
 import {FacturaCreateDto} from "./dto/factura.create-dto";
-import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
-import {UsuarioEntity} from "../usuario/usuario.entity";
 import {FacturaUpdateDto} from "./dto/factura.update-dto";
 import {FacturaEntity} from "./factura.entity";
 
@@ -71,14 +68,19 @@ export class FacturaController{
         @Body() paramBody,
         @Res() res,
     ){
+
+        const today = new Date();
+        const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        const dateTime = date+' '+time;
+
+
         let respuestaCreacionFactura
         const facturaValidada = new FacturaCreateDto()
-        facturaValidada.total = paramBody.total
-        facturaValidada.fecha = paramBody.fecha
         facturaValidada.cumplido = paramBody.cumplido
         facturaValidada.usuarioId = paramBody.usuario
 
-        console.log(paramBody)
+        //console.log(paramBody)
 
         const errores: ValidationError[] = await validate(facturaValidada)
         const texto = `&total=${paramBody.total}&fecha=${paramBody.fecha}&cumplido=${paramBody.cumplido}&usuario=${paramBody.usuario}`
@@ -88,7 +90,15 @@ export class FacturaController{
             return res.redirect('/factura/vista/crear?error='+error+texto)
         } else {
             try {
+                paramBody.total = 0.0
+                paramBody.fecha = dateTime
+
                 respuestaCreacionFactura = await this._facturaService.crearUno(paramBody)
+                console.log("LO CREADO:*******" + respuestaCreacionFactura)
+
+
+                // AQUI SE TIENE QUE CREAR TODOS LOS DETALLE FACTURAS, supongo que es un FOR.********************
+
             } catch (e){
                 console.error(e)
                 const errorCreacion = 'Error al crear la Factura'
@@ -134,7 +144,6 @@ export class FacturaController{
         } else {
             return res.redirect('/factura/vista/inicio?mensaje=Factura no encontrado')
         }
-
     }
 
 
@@ -146,12 +155,14 @@ export class FacturaController{
         @Body() paramBody,
         @Res() res
     ){
+
+        console.log('LLEGA:'+ paramBody)
         const facturaValidada = new FacturaUpdateDto()
         facturaValidada.id = Number(parametrosRuta.id)
         facturaValidada.fecha = paramBody.fecha
         facturaValidada.total = paramBody.total
         facturaValidada.cumplido = paramBody.cumplido
-        facturaValidada.usuarioId = paramBody.usuario.usuarioId
+        //facturaValidada.usuarioId = paramBody.usuario.usuarioId
 
         const errores: ValidationError[] = await validate(facturaValidada)
         if(errores.length > 0){
@@ -174,7 +185,6 @@ export class FacturaController{
                 return res.redirect('/factura/vista/inicio?mensaje='+errorCreacion)
             }
         }
-
     }
 
 
@@ -192,6 +202,5 @@ export class FacturaController{
             return res.redirect('/factura/vista/inicio?error=Error eliminando  Factura')
         }
     }
-
 
 }

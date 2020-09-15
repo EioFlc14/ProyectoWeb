@@ -29,7 +29,7 @@ export class FacturaEntity{
         type: "datetime",
         nullable: true,
     })
-    fecha?: string
+    fecha: string
 
 
     @Column({

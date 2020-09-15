@@ -18,14 +18,14 @@ export class FacturaCreateDto{
     @IsNumber()
     id:number */
 
-    @IsNotEmpty()
+/*    @IsNotEmpty()
     @IsNumberString()
     @IsDecimal({'decimal_digits': '0,3'})
-    total:string
+    total:string */
 
-    @IsNotEmpty()
+  /*  @IsNotEmpty()
     //@IsDateString()
-    fecha:string
+    fecha:string */
 
     @IsNotEmpty()
     @IsNumberString()

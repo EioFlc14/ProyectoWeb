@@ -233,12 +233,16 @@ import {FileInterceptor, MulterModule} from "@nestjs/platform-express";
 
 import { diskStorage } from 'multer';
 import {editFileName, imageFileFilter} from "../utils/file-uploading.utils";
+import {ProductoService} from "../producto/producto.service";
+import {UnidadService} from "../unidad/unidad.service";
 
 @Controller('usuario-producto')
 export class UsuarioProductoController{
 
     constructor(
-        private readonly _usuarioProductoService: UsuarioProductoService
+        private readonly _usuarioProductoService: UsuarioProductoService,
+        private readonly _productoService: ProductoService,
+        private readonly _unidadService: UnidadService
     ) {
     }
 
@@ -247,7 +251,6 @@ export class UsuarioProductoController{
     async obtenerUsuarioProductos(
         @Res() res
     ) {
-        let resultadoImagen
         let resultadoEncontrado
         try {
             resultadoEncontrado = await this._usuarioProductoService.buscarTodos()
@@ -266,20 +269,39 @@ export class UsuarioProductoController{
 
 
     @Get('vista/crear')
-    crearUsuarioProductoVista(
+    async crearUsuarioProductoVista(
         @Query() parametrosConsulta,
         @Res() res
     ){
-        return res.render('usuario-producto/crear',
-            {
-                error: parametrosConsulta.error,
-                producto: parametrosConsulta.producto,
-                stock: parametrosConsulta.stock,
-                imagen: parametrosConsulta.imagen,
-                precio: parametrosConsulta.precio,
-                usuario: parametrosConsulta.usuario,
-                unidad: parametrosConsulta.unidad
-            })
+
+        let arregloProductos
+        let arregloUnidades
+
+        try {
+            arregloProductos = await this._productoService.buscarTodos()
+            arregloUnidades = await  this._unidadService.buscarTodos()
+        } catch(error) {
+            throw new NotFoundException('Error obteniendo datos.')
+        }
+
+        if(arregloUnidades && arregloProductos){
+            return res.render('usuario-producto/crear',
+                {
+                    error: parametrosConsulta.error,
+                    producto: parametrosConsulta.producto,
+                    stock: parametrosConsulta.stock,
+                    imagen: parametrosConsulta.imagen,
+                    precio: parametrosConsulta.precio,
+                    usuario: parametrosConsulta.usuario,
+                    unidad: parametrosConsulta.unidad,
+                    arregloUnidades: arregloUnidades,
+                    arregloProductos: arregloProductos
+                })
+        } else {
+            throw new NotFoundException('No hay suficientes datos para esta acción. Inténtelo más tarde.')
+        }
+
+
     }
 
     //@Post()
@@ -314,7 +336,7 @@ export class UsuarioProductoController{
         usuarioProductoValidado.productoProductoId = paramBody.producto
         usuarioProductoValidado.stock = paramBody.stock
         usuarioProductoValidado.precio = paramBody.precio
-        usuarioProductoValidado.imagen = file.path
+        usuarioProductoValidado.imagen = file.path.split('/')[2]
         usuarioProductoValidado.unidadUnidadId = paramBody.unidad
         usuarioProductoValidado.usuarioUsuarioId = paramBody.usuario
 
@@ -333,7 +355,8 @@ export class UsuarioProductoController{
                 paramBody.producto = Number(paramBody.producto)
                 paramBody.unidad = Number(paramBody.unidad)
                 paramBody.usuario = Number(paramBody.usuario)
-                paramBody.imagen = file.path
+                paramBody.imagen = file.path.split('/')[2]
+                console.log(paramBody.image)
 
                 let usuarioProducto = paramBody as UsuarioProductoEntity
                 usuarioProducto = JSON.parse(JSON.stringify(usuarioProducto));
