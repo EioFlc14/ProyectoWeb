@@ -10,6 +10,7 @@
 <% let existePrecio = typeof precio !== 'undefined'%>
 <% let existeUnidad = typeof unidad !== 'undefined'%>
 <% let existeUsuario = typeof usuario !== 'undefined'%>
+<% let existeImagen = typeof imagen !== 'undefined' %>
 
 
 <h1> <%= existeUsuarioProducto ? 'Editar': 'Crear' %> usuario producto</h1>
@@ -20,12 +21,15 @@
     <% existePrecio = true %>
     <% existeUnidad = true %>
     <% existeUsuario = true %>
+    <% existeImagen = true%>
 
     <% producto = usuarioProducto.producto.nombre%>
     <% stock = usuarioProducto.stock %>
     <% precio = usuarioProducto.precio %>
     <% unidad = usuarioProducto.unidad.nombre %>
+    <% unidadId = usuarioProducto.unidad.unidad_id %>
     <% usuario = usuarioProducto.usuario.username%>
+    <% imagen = usuarioProducto.imagen %>
 
 <%}%>
 
@@ -44,7 +48,7 @@
         <label for="producto">Elija su producto</label>
         <select name="producto" id="producto">
             <% arregloProductos.forEach((objeto) => { %>
-                <option value="<%= objeto.producto_id%>"><%= objeto.nombre%></option>
+                <option value="<%= objeto.productoId%>" selected><%= objeto.nombre%></option>
             <%})%>
         </select>
     <%}%>
@@ -55,38 +59,46 @@
     <input id="stock" type="number" name="stock" value="<%= existeStock ? stock: '' %>">
     <br>
 
-    <label for="precio">Precio:</label>
+    <label for="precio">Precio Unitario:</label>
     <input id="precio" type="text" name="precio" value="<%= existePrecio ? precio: '' %>">
     <br>
 
 
-    <% if(existeUsuarioProducto) {%>
-        <label for="unidadUnidadId">Unidad:</label>
-        <input id="unidadUnidadId" type="text" disabled name="unidad" value="<%= existeUnidad ? unidad: '' %>">
-    <%} else {%>
-        <label for="unidad">Elija la unidad</label>
-        <select name="unidad" id="unidad">
-            <% arregloUnidades.forEach((objeto) => { %>
-                <option value="<%= objeto.unidad_id%>"><%= objeto.nombre%></option>
-            <%})%>
-        </select>
-    <%}%>
+    <label for="unidad">Elija la unidad</label>
+    <select name="unidad" id="unidad">
+        <% arregloUnidades.forEach((objeto) => { %>
+        <% if (existeUsuarioProducto) {%>
+            <% if (objeto.unidadId == unidadId){%>
+                <option value="<%= objeto.unidadId%>" selected ><%= objeto.nombre%></option>
+            <% } else { %>
+                <option value="<%= objeto.unidadId%>" selected><%= objeto.nombre%></option>
+            <% }%>
+        <%} else {%>
+                <option value="<%= objeto.unidadId%>" selected><%= objeto.nombre%></option>
+        <%}})%>
+    </select>
     <br>
-
 
 
     <label for="usuarioUsuarioId">Usuario:</label>
-    <input id="usuarioUsuarioId"
-           type="text"
-    <% if(existeUsuarioProducto) {%>
-           disabled
-    <%}%>
+    <input id="usuarioUsuarioId" type="text"
+            <% if(existeUnidad) {%>
+                   disabled
+            <%}%>
            name="usuario" value="<%= existeUsuario ? usuario: '' %>">
     <br>
 
-    <label for="imagen">Imagen:</label>
-    <input type="file" id="imagen" name="imagen" accept="image/*">
+
+    <% if (existeImagen) {%>
+        <label for="imagenProducto">Imagen actual:</label>
+        <img id="imagenProducto" src="/imagenes/<%= imagen %>" width="400" height="300">
+    <% } %>
     <br >
+
+    <label for="imagen">Imagen:</label>
+    <input type="file" id="imagen" name="imagen" accept="image/*"  >
+    <br>
+
 
 
     <button type="submit" >SUBMIT</button>

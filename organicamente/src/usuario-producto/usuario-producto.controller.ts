@@ -220,21 +220,19 @@ import {
     Query, Req,
     Res, UploadedFile, UseInterceptors
 } from "@nestjs/common";
-import {UsuarioCreateDto} from "../usuario/dto/usuario.create-dto";
 import {validate, ValidationError} from "class-validator";
-import {UsuarioService} from "../usuario/usuario.service";
 import {UsuarioProductoService} from "./usuario-producto.service";
 import {UsuarioProductoCreateDto} from "./dto/usuario-producto.create-dto";
-import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
-import {UsuarioEntity} from "../usuario/usuario.entity";
 import {UsuarioProductoUpdateDto} from "./dto/usuario-producto.update-dto";
 import {UsuarioProductoEntity} from "./usuario-producto.entity";
-import {FileInterceptor, MulterModule} from "@nestjs/platform-express";
-
+import {FileInterceptor} from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
-import {editFileName, imageFileFilter} from "../utils/file-uploading.utils";
+import {defaultImagen, editFileName, editFileNameEditar, imageFileFilter} from "../utils/file-uploading.utils";
 import {ProductoService} from "../producto/producto.service";
 import {UnidadService} from "../unidad/unidad.service";
+
+const fs = require('fs')
+
 
 @Controller('usuario-producto')
 export class UsuarioProductoController{
@@ -279,12 +277,14 @@ export class UsuarioProductoController{
 
         try {
             arregloProductos = await this._productoService.buscarTodos()
-            arregloUnidades = await  this._unidadService.buscarTodos()
+            arregloUnidades = await this._unidadService.buscarTodos()
         } catch(error) {
             throw new NotFoundException('Error obteniendo datos.')
         }
 
         if(arregloUnidades && arregloProductos){
+            console.log("ARREGLO PRODUCTOS:" + arregloProductos)
+            console.log("ARREGLO UNIDADES:" + arregloUnidades)
             return res.render('usuario-producto/crear',
                 {
                     error: parametrosConsulta.error,
@@ -305,7 +305,6 @@ export class UsuarioProductoController{
     }
 
     //@Post()
-
     @Post('crearDesdeVista')
     @UseInterceptors(
         FileInterceptor('imagen', {
@@ -323,9 +322,10 @@ export class UsuarioProductoController{
     ){
 
         //console.log(paramBody)
-        //console.log(res)
         //console.log(req)
-        //console.log(file)
+        //console.log(res)
+        //console.log("ARCHIVO: " + file.filename)
+        //console.log("ARCHIVO: " + file.originalname)
 
         if(req.fileValidationError){
             return res.redirect('/usuario-producto/vista/crear?error='+req.fileValidationError)
@@ -336,7 +336,11 @@ export class UsuarioProductoController{
         usuarioProductoValidado.productoProductoId = paramBody.producto
         usuarioProductoValidado.stock = paramBody.stock
         usuarioProductoValidado.precio = paramBody.precio
-        usuarioProductoValidado.imagen = file.path.split('/')[2]
+        if (file == undefined){
+            usuarioProductoValidado.imagen = defaultImagen
+        } else {
+            usuarioProductoValidado.imagen = file.path.split('/')[2]
+        }
         usuarioProductoValidado.unidadUnidadId = paramBody.unidad
         usuarioProductoValidado.usuarioUsuarioId = paramBody.usuario
 
@@ -349,13 +353,17 @@ export class UsuarioProductoController{
         } else {
             try {
 
-
                 paramBody.stock = Number(paramBody.stock)
                 paramBody.precio = Number(paramBody.precio)
                 paramBody.producto = Number(paramBody.producto)
                 paramBody.unidad = Number(paramBody.unidad)
                 paramBody.usuario = Number(paramBody.usuario)
-                paramBody.imagen = file.path.split('/')[2]
+                if (file == undefined){
+                    paramBody.imagen = defaultImagen
+                } else {
+                    paramBody.imagen = file.path.split('/')[2]
+                }
+
                 console.log(paramBody.image)
 
                 let usuarioProducto = paramBody as UsuarioProductoEntity
@@ -380,19 +388,21 @@ export class UsuarioProductoController{
 
 
     @Get('vista/editar/:id') // Controlador
-    async editarUsuarioVista(
+    async editarUsuarioProductoVista(
         @Query() parametrosConsulta,
         @Res() res,
         @Param() parametrosRuta
     ) {
         const id = Number(parametrosRuta.id)
         let usuarioProductoEncontrado
+        let arregloUnidades
 
         try {
             usuarioProductoEncontrado = await this._usuarioProductoService.buscarUno(id)
+            arregloUnidades = await this._unidadService.buscarTodos()
         } catch (error) {
             console.error('Error del servidor')
-            return res.redirect('/usuario-producto/vista/inicio?mensaje=Error buscando usuario producto')
+            return res.redirect('/usuario-producto/vista/inicio?mensaje=Error obteniendo datos')
         }
 
         if (usuarioProductoEncontrado){
@@ -400,7 +410,8 @@ export class UsuarioProductoController{
                 'usuario-producto/crear',
                 {
                     error: parametrosConsulta.error,
-                    usuarioProducto: usuarioProductoEncontrado
+                    usuarioProducto: usuarioProductoEncontrado,
+                    arregloUnidades: arregloUnidades
                 }
             )
         } else {
@@ -412,24 +423,47 @@ export class UsuarioProductoController{
 
 
 
+
     @Post('editarDesdeVista/:id')
+    @UseInterceptors(
+        FileInterceptor('imagen', {
+            storage: diskStorage({
+                destination: 'publico/imagenes',
+                filename: editFileName,
+            }),
+            fileFilter: imageFileFilter
+        }))
     async editarDesdeVista(
         @Param() parametrosRuta,
         @Body() paramBody,
-        @Res() res
+        @Res() res,
+        @UploadedFile() file
     ){
 
         const usuarioProductoValidado = new UsuarioProductoUpdateDto()
         usuarioProductoValidado.id = Number(parametrosRuta.id)
         usuarioProductoValidado.stock = paramBody.stock
         usuarioProductoValidado.precio = paramBody.precio
-        usuarioProductoValidado.imagen = paramBody.imagen
+        if (file == undefined){
+            usuarioProductoValidado.imagen = defaultImagen
+        } else {
+            usuarioProductoValidado.imagen = file.path.split('/')[2]
+        }
 
         const errores: ValidationError[] = await validate(usuarioProductoValidado)
         if(errores.length > 0){
             console.error('Errores:',errores);
             return res.redirect('/usuario-producto/vista/inicio?mensaje= Error en el formato de los datos')
         } else {
+
+            console.log("FILE:" + file)
+            console.log("PARAMBODY IMAGEN: " + paramBody.imagen)
+
+            if (file == undefined){
+                paramBody.imagen = defaultImagen
+            } else {
+                paramBody.imagen = file.path.split('/')[2]
+            }
 
             const usuarioProducto = {
                 usuarioProductoId: Number(parametrosRuta.id),
