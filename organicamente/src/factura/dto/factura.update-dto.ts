@@ -9,19 +9,6 @@ export class FacturaUpdateDto{
     id:number
 
     @IsNotEmpty()
-    @IsNumberString()
-    @IsDecimal({'decimal_digits': '0,3'})
-    total:string
-
-    @IsNotEmpty()
-        //@IsDateString()
-    fecha:string
-
-    @IsNotEmpty()
-    @IsNumberString()
-    usuarioId:string
-
-    @IsNotEmpty()
     @MaxLength(5)
     cumplido:string
 

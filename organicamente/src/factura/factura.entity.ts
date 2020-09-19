@@ -22,7 +22,7 @@ export class FacturaEntity{
         scale: 3, // decimales
         nullable: false,
     })
-    total:string
+    total:number
 
     @Column({
         name: 'fecha',

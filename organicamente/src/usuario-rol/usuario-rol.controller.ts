@@ -9,21 +9,19 @@ import {
     Query,
     Res
 } from "@nestjs/common";
-import {UnidadService} from "../unidad/unidad.service";
-import {UnidadCreateDto} from "../unidad/dto/unidad.create-dto";
 import {validate, ValidationError} from "class-validator";
 import {UsuarioRolService} from "./usuario-rol.service";
 import {UsuarioRolCreateDto} from "./dto/usuario-rol.create-dto";
-import {UsuarioProductoUpdateDto} from "../usuario-producto/dto/usuario-producto.update-dto";
-import {UsuarioProductoEntity} from "../usuario-producto/usuario-producto.entity";
-import {UsuarioRolUpdateDto} from "./dto/usuario-rol.update-dto";
-import {UsuarioRolEntity} from "./usuario-rol.entity";
+import {UsuarioService} from "../usuario/usuario.service";
+import {RolService} from "../rol/rol.service";
 
 @Controller('usuario-rol')
 export class UsuarioRolController{
 
     constructor(
-        private readonly _usuarioRolService: UsuarioRolService
+        private readonly _usuarioRolService: UsuarioRolService,
+        private readonly _usuarioService: UsuarioService,
+        private readonly _rolService: RolService,
     ) {
     }
 
@@ -47,17 +45,37 @@ export class UsuarioRolController{
     }
 
     @Get('vista/crear')
-    crearUsuariosRolesVista(
+    async crearUsuariosRolesVista(
         @Query() parametrosConsulta,
         @Res() res
     ){
-        return res.render('usuario-rol/crear',
-            {
-                error: parametrosConsulta.error,
-                usuario: parametrosConsulta.usuario,
-                rol: parametrosConsulta.rol
-            })
+
+        let arregloUsuarios
+        let arregloRoles
+
+        try {
+            arregloUsuarios = await this._usuarioService.buscarTodos()
+            arregloRoles = await this._rolService.buscarTodos()
+
+        } catch {
+            throw new InternalServerErrorException('Error obteniendo los datos. ')
+        }
+
+        if(arregloRoles && arregloUsuarios){
+            return res.render('usuario-rol/crear',
+                {
+                    error: parametrosConsulta.error,
+                    usuario: parametrosConsulta.usuario,
+                    rol: parametrosConsulta.rol,
+                    arregloRoles: arregloRoles,
+                    arregloUsuarios:  arregloUsuarios,
+                })
+        } else {
+            throw new InternalServerErrorException('No hay suficientes datos para realizar su acción. Inténtelo más tarde.')
+        }
     }
+
+
 
     //@Post()
     @Post('crearDesdeVista')

@@ -1,7 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {UsuarioEntity} from "./usuario.entity";
-import {Repository} from "typeorm";
+import {FindManyOptions, Repository} from "typeorm";
 
 @Injectable()
 export class  UsuarioService {
@@ -30,6 +30,27 @@ export class  UsuarioService {
 
     eliminarUno(id:number){
         return this.repositorio.delete(id)
+    }
+
+    validarLogin(user:string, pswd: string){
+
+        let busquedaEjemplo: FindManyOptions<UsuarioEntity>
+
+        busquedaEjemplo = {
+            where: [
+                {
+                    email: user, // AND
+                    password: pswd,
+                },
+                {
+                    username: user,
+                    password: pswd,
+
+                }
+            ]
+        }
+
+        return this.repositorio.find(busquedaEjemplo)
     }
 
 

@@ -25,7 +25,6 @@ export class UsuarioCreateDto {
     @IsNotEmpty()
     @MaxLength(50)
     @MinLength(8)
-    @IsAlphanumeric()
     username: string
 
     @IsNotEmpty()

@@ -1,4 +1,4 @@
-import {IsNotEmpty, IsNumber, IsPositive, Max, MaxLength} from "class-validator";
+import {IsAlpha, IsNotEmpty, IsNumber, IsPositive, Max, MaxLength} from "class-validator";
 
 
 export class ProductoCreateDto{

@@ -1,0 +1,60 @@
+<h3>EDITAR FACTURA</h3>
+
+
+
+<% if(typeof error != 'undefined'){%>
+    <p> MENSAJE: <%= error %></p>
+<% }%>
+
+
+<label for="fecha">Fecha:</label>
+<input id="fecha" type="text" disabled name="fecha" value="<%= factura.fecha%>">
+<br>
+
+<label for="total">Total:</label>
+<input id="total" type="text" disabled name="total" value="<%= factura.total%>">
+<br>
+
+<label for="total">Cumplido:</label>
+<input id="total" type="text" disabled name="total" value="<%= factura.cumplido%>">
+
+
+<form action="/factura/editarDesdeVista/<%= factura.facturaId %>" method="post">
+    <button id="cumplido" name="cumplido" type="submit"
+            <%if(factura.cumplido.toString().toLowerCase() === 'si'){%>
+                disabled
+            <%}%>
+            value="SI" > MARCAR COMO CUMPLIDO </button>
+</form>
+
+
+<a href="/factura/vista/inicio">
+    <button>REGRESAR A INICIO</button>
+</a>
+
+
+
+<table>
+    <tr>
+        <th>PRODUCTO</th>
+        <th>CANTIDAD</th>
+        <th>PRECIO</th>
+        <th>VALOR</th>
+        <th>IMAGEN</th>
+    </tr>
+
+    <% orden.forEach((objeto) => { %>
+    <% console.log(objeto)%>
+        <tr>
+            <td><%= objeto.nombre %>"</td>
+            <td><%= objeto.cantidad %></td>
+            <td><%= objeto.precio %> </td>
+            <td><%= objeto.valor %> </td>
+            <td><img src="/imagenes/<%=objeto.imagen%>" width="400" height="300" ></td>
+        </tr>
+    <% }) %>
+
+</table>
+
+
+<%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>

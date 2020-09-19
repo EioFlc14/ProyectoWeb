@@ -9,13 +9,10 @@ import {
     Query,
     Res
 } from "@nestjs/common";
-import {ProductoService} from "../producto/producto.service";
-import {ProductoCreateDto} from "../producto/dto/producto.create-dto";
+
 import {validate, ValidationError} from "class-validator";
 import {UnidadService} from "./unidad.service";
 import {UnidadCreateDto} from "./dto/unidad.create-dto";
-import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
-import {UsuarioEntity} from "../usuario/usuario.entity";
 import {UnidadUpdateDto} from "./dto/unidad.update-dto";
 import {UnidadEntity} from "./unidad.entity";
 
@@ -75,19 +72,27 @@ export class UnidadController{
             const error = 'Error en el formato de los datos'
             return res.redirect('/unidad/vista/crear?error='+error+texto)
         } else {
-            try {
-                respuestaCreacionUnidad = await this._unidadService.crearUno(paramBody)
-            } catch (e){
-                console.error(e)
-                const errorCreacion = 'Error al crear la Unidad'
-                return res.redirect('/unidad/vista/crear?error='+errorCreacion+texto)
-            }
 
-            if(respuestaCreacionUnidad){
-                return res.redirect('/unidad/vista/inicio') // en caso de que all esté OK se envía al inicio
+            let error
+            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+            if(re.test(paramBody.nombre)) {
+                try {
+                    respuestaCreacionUnidad = await this._unidadService.crearUno(paramBody)
+                } catch (e) {
+                    console.error(e)
+                    error = 'Error al crear la Unidad'
+                    return res.redirect('/unidad/vista/crear?error=' + error + texto)
+                }
+
+                if (respuestaCreacionUnidad) {
+                    return res.redirect('/unidad/vista/inicio') // en caso de que all esté OK se envía al inicio
+                } else {
+                    error = 'Error al crear la Unidad'
+                    return res.redirect('/unidad/vista/crear?error=' + error + texto)
+                }
             } else {
-                const errorCreacion = 'Error al crear la Unidad'
-                return res.redirect('/unidad/vista/crear?error='+errorCreacion+texto)
+                error = 'Caracteres no permitidos en el nombre'
+                return res.redirect('/unidad/vista/crear?error='+error)
             }
         }
 
@@ -143,19 +148,28 @@ export class UnidadController{
             return res.redirect('/unidad/vista/inicio?mensaje= Error en el formato de los datos')
         } else {
 
-            const unidadEditada = {
-                unidadId: Number(parametrosRuta.id),
-                nombre: paramBody.nombre,
-            } as UnidadEntity
+            let error
+            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+            if(re.test(paramBody.nombre)) {
 
-            try {
-                await this._unidadService.editarUno(unidadEditada)
-                return res.redirect('/unidad/vista/inicio?mensaje= Unidad editada correctamente') // en caso de que all esté OK se envía al inicio
-            } catch (e){
-                console.error(e)
-                const errorCreacion = 'Error editando Unidad'
-                return res.redirect('/unidad/vista/inicio?mensaje='+errorCreacion)
+                const unidadEditada = {
+                    unidadId: Number(parametrosRuta.id),
+                    nombre: paramBody.nombre,
+                } as UnidadEntity
+
+                try {
+                    await this._unidadService.editarUno(unidadEditada)
+                    return res.redirect('/unidad/vista/inicio?mensaje= Unidad editada correctamente') // en caso de que all esté OK se envía al inicio
+                } catch (e){
+                    console.error(e)
+                    error = 'Error editando Unidad'
+                    return res.redirect('/unidad/vista/inicio?mensaje='+error)
+                }
+            } else {
+                error = 'Caracteres no permitidos en el nombre'
+                return res.redirect('/unidad/vista/crear?error='+error)
             }
+
         }
 
     }

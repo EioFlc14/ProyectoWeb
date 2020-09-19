@@ -28,7 +28,7 @@ export class DetalleFacturaController{
     ) {
     }
 
-
+/*
     @Get('vista/inicio') // poner la direccion
     async obtenerDetallesFacturas(
         @Res() res
@@ -48,6 +48,7 @@ export class DetalleFacturaController{
             throw new NotFoundException('NO se encontraron facturas')
         }
     }
+ */
 
     @Get('vista/crear')
     crearDetalleFacturaVista(
@@ -73,11 +74,11 @@ export class DetalleFacturaController{
     ){
         let respuestaCreacionFactura
         const detalleFacturaValidada = new DetalleFacturaCreateDto()
-        detalleFacturaValidada.cantidad = paramBody.cantidad
-        detalleFacturaValidada.precio = paramBody.precio
-        detalleFacturaValidada.valor = paramBody.valor
-        detalleFacturaValidada.usuarioProductoId = paramBody.usuarioProducto
-        detalleFacturaValidada.facturaId = paramBody.factura
+        detalleFacturaValidada.cantidad = Number(paramBody.cantidad)
+        detalleFacturaValidada.precio = Number(paramBody.precio)
+        detalleFacturaValidada.valor = Number(paramBody.valor)
+        detalleFacturaValidada.usuarioProductoId = Number(paramBody.usuarioProducto)
+        detalleFacturaValidada.facturaId = Number(paramBody.factura)
 
         console.log(paramBody)
 

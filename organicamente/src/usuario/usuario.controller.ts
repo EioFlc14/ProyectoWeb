@@ -88,19 +88,28 @@ export class UsuarioController{
             const error = 'Error en el formato de los datos'
             return res.redirect('/usuario/vista/crear?error='+error+texto)
         } else {
-            try {
-                respuestaCreacionUsuario = await this._usuarioService.crearUno(paramBody)
-            } catch (e){
-                console.error(e)
-                const errorCreacion = 'Error al crear el Usuario'
-                return res.redirect('/usuario/vista/crear?error='+errorCreacion+texto)
-            }
 
-            if(respuestaCreacionUsuario){
-                return res.redirect('/usuario/vista/inicio?mensaje=Usuario creado correctamente') // en caso de que all esté OK se envía al inicio
+            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+            if(re.test(paramBody.nombre)) {
+
+                try {
+
+                    respuestaCreacionUsuario = await this._usuarioService.crearUno(paramBody)
+                } catch (e) {
+                    console.error(e)
+                    const errorCreacion = 'Error al crear el Usuario'
+                    return res.redirect('/usuario/vista/crear?error=' + errorCreacion + texto)
+                }
+
+                if (respuestaCreacionUsuario) {
+                    return res.redirect('/usuario/vista/inicio?mensaje=Usuario creado correctamente') // en caso de que all esté OK se envía al inicio
+                } else {
+                    const errorCreacion = 'Error al crear el Usuario'
+                    return res.redirect('/usuario/vista/crear?error=' + errorCreacion + texto)
+                }
             } else {
-                const errorCreacion = 'Error al crear el Usuario'
-                return res.redirect('/usuario/vista/crear?error='+errorCreacion+texto)
+                const error = 'Caracteres no permitidos en el nombre'
+                return res.redirect('/unidad/vista/crear?error='+error)
             }
         }
 
@@ -162,26 +171,35 @@ export class UsuarioController{
             return res.redirect('/usuario/vista/inicio?mensaje= Error en el formato de los datos')
         } else {
 
-            const usuarioEditado = {
-                usuarioId: Number(parametrosRuta.id),
-                nombre: paramBody.nombre,
-                apellido : paramBody.apellido,
-                email : paramBody.email,
-                telefono : paramBody.telefono,
-                direccion : paramBody.direccion,
-                username : paramBody.username,
-                password : paramBody.password,
-                identificacion : paramBody.identificacion
-            } as UsuarioEntity
+            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+            if(re.test(paramBody.nombre)) {
 
-            try {
-                await this._usuarioService.editarUno(usuarioEditado)
-                return res.redirect('/usuario/vista/inicio?mensaje= Usuario editado correctamente') // en caso de que all esté OK se envía al inicio
-            } catch (e){
-                console.error(e)
-                const errorCreacion = 'Error editando Usuario'
-                return res.redirect('/usuario/vista/inicio?mensaje='+errorCreacion)
+                const usuarioEditado = {
+                    usuarioId: Number(parametrosRuta.id),
+                    nombre: paramBody.nombre,
+                    apellido: paramBody.apellido,
+                    email: paramBody.email,
+                    telefono: paramBody.telefono,
+                    direccion: paramBody.direccion,
+                    username: paramBody.username,
+                    password: paramBody.password,
+                    identificacion: paramBody.identificacion
+                } as UsuarioEntity
+
+                try {
+                    await this._usuarioService.editarUno(usuarioEditado)
+                    return res.redirect('/usuario/vista/inicio?mensaje= Usuario editado correctamente') // en caso de que all esté OK se envía al inicio
+                } catch (e) {
+                    console.error(e)
+                    const errorCreacion = 'Error editando Usuario'
+                    return res.redirect('/usuario/vista/inicio?mensaje=' + errorCreacion)
+                }
+
+            } else {
+                const error = 'Caracteres no permitidos en el nombre'
+                return res.redirect('/usuario/vista/crear?error='+error)
             }
+
         }
 
     }
@@ -201,6 +219,55 @@ export class UsuarioController{
             return res.redirect('/usuario/vista/inicio?error=Error eliminando usuario')
         }
     }
+
+
+
+    @Get('vista/login')  // esto de seguro es en otro controler pero HASTA ESO SE DEJA AQUÍ
+    login(
+        @Query() paramConsulta,
+        @Res() res,
+    ){
+        return res.render('usuario/login',
+            {
+                error: paramConsulta.error,
+            })
+    }
+
+
+
+    @Post('loginDesdeVista')
+    async loginDesdeVista(
+        @Body() paramBody,
+        @Res() res,
+    ){
+
+        try {
+
+            //console.log("BODY PARAM:" + paramBody.user + ' ' + paramBody.password)
+            const user = paramBody.user
+            const password = paramBody.password
+
+            const respuestaLogeo = await this._usuarioService.validarLogin(user, password)
+
+            //console.log("RESPUESTA LOGEO: " + respuestaLogeo)
+            if (respuestaLogeo.length == 1){
+                // Se manda a la pantalla principal
+
+                return res.redirect('/producto/vista/inicio')
+
+            } else {
+                // MENSAJE de que nadie está logeado con esa cuenta.
+                return res.redirect('/usuario/vista/login?error=Usuario no encontrado. Revise sus credenciales.')
+
+            }
+
+        } catch (error){
+            console.error('Error del servidor')
+            return res.redirect('/usuario/vista/login?error=Error en el servidor.')
+        }
+
+    }
+
 
 
 }

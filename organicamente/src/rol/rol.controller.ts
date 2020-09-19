@@ -9,13 +9,10 @@ import {
     Query,
     Res
 } from "@nestjs/common";
-import {ProductoService} from "../producto/producto.service";
-import {ProductoCreateDto} from "../producto/dto/producto.create-dto";
+
 import {validate, ValidationError} from "class-validator";
 import {RolService} from "./rol.service";
 import {RolCreateDto} from "./dto/rol.create-dto";
-import {UsuarioUpdateDto} from "../usuario/dto/usuario.update-dto";
-import {UsuarioEntity} from "../usuario/usuario.entity";
 import {RolUpdateDto} from "./dto/rol.update-dto";
 import {RolEntity} from "./rol.entity";
 
@@ -67,7 +64,6 @@ export class RolController{
         let respuestaCreacionRol
         const rolCreado = new RolCreateDto()
         rolCreado.nombre = paramBody.nombre
-        // **************************+ FALTA VER LO DE LA IMAGEN COMO SE GUARDA ****************************
 
 
         const errores: ValidationError[] = await validate(rolCreado)
@@ -77,19 +73,28 @@ export class RolController{
             const error = 'Error en el formato de los datos'
             return res.redirect('/rol/vista/crear?error='+error+texto)
         } else {
-            try {
-                respuestaCreacionRol = await this._rolService.crearUno(paramBody)
-            } catch (e){
-                console.error(e)
-                const errorCreacion = 'Error al crear el rol'
-                return res.redirect('/rol/vista/crear?error='+errorCreacion+texto)
-            }
 
-            if(respuestaCreacionRol){
-                return res.redirect('/rol/vista/inicio?mensaje=Rol creado exitosamente') // en caso de que all esté OK se envía al inicio
+            let error
+            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+            if(re.test(paramBody.nombre)) {
+
+                try {
+                    respuestaCreacionRol = await this._rolService.crearUno(paramBody)
+                } catch (e) {
+                    console.error(e)
+                    error = 'Error al crear el rol'
+                    return res.redirect('/rol/vista/crear?error=' + error + texto)
+                }
+
+                if (respuestaCreacionRol) {
+                    return res.redirect('/rol/vista/inicio?mensaje=Rol creado exitosamente') // en caso de que all esté OK se envía al inicio
+                } else {
+                    error = 'Error al crear el Producto'
+                    return res.redirect('/rol/vista/crear?error=' + error + texto)
+                }
             } else {
-                const errorCreacion = 'Error al crear el Producto'
-                return res.redirect('/rol/vista/crear?error='+errorCreacion+texto)
+                error = 'Caracteres no permitidos en el nombre'
+                return res.redirect('/rol/vista/crear?error='+error)
             }
 
         }
@@ -144,19 +149,27 @@ export class RolController{
             return res.redirect('/rol/vista/inicio?mensaje= Error en el formato de los datos')
         } else {
 
-            const rolEditado = {
-                rolId: Number(parametrosRuta.id),
-                nombre: paramBody.nombre,
-            } as RolEntity
+            let error
+            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+            if(re.test(paramBody.nombre)) {
+                const rolEditado = {
+                    rolId: Number(parametrosRuta.id),
+                    nombre: paramBody.nombre,
+                } as RolEntity
 
-            try {
-                await this._rolService.editarUno(rolEditado)
-                return res.redirect('/rol/vista/inicio?mensaje= Usuario editado correctamente') // en caso de que all esté OK se envía al inicio
-            } catch (e){
-                console.error(e)
-                const errorCreacion = 'Error editando Rol'
-                return res.redirect('/rol/vista/inicio?mensaje='+errorCreacion)
+                try {
+                    await this._rolService.editarUno(rolEditado)
+                    return res.redirect('/rol/vista/inicio?mensaje= Usuario editado correctamente') // en caso de que all esté OK se envía al inicio
+                } catch (e) {
+                    console.error(e)
+                    error = 'Error editando Rol'
+                    return res.redirect('/rol/vista/inicio?mensaje=' + error)
+                }
+            } else {
+                error = 'Caracteres no permitidos en el nombre'
+                return res.redirect('/rol/vista/crear?error='+error)
             }
+
         }
 
     }

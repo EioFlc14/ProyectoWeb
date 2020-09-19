@@ -29,7 +29,7 @@ export class FacturaCreateDto{
 
     @IsNotEmpty()
     @IsNumberString()
-    usuarioId:string
+    usuarioId:number
 
     @IsNotEmpty()
     @MaxLength(5)

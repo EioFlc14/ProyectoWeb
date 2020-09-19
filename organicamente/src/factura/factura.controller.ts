@@ -15,13 +15,17 @@ import {FacturaService} from "./factura.service";
 import {FacturaCreateDto} from "./dto/factura.create-dto";
 import {FacturaUpdateDto} from "./dto/factura.update-dto";
 import {FacturaEntity} from "./factura.entity";
+import {UsuarioProductoService} from "../usuario-producto/usuario-producto.service";
+import {DetalleFacturaService} from "../detalle-factura/detalle-factura.service";
 
 
 @Controller('factura')
 export class FacturaController{
 
     constructor(
-        private readonly _facturaService: FacturaService
+        private readonly _facturaService: FacturaService,
+        private readonly _usuarioProductoService: UsuarioProductoService,
+        private readonly _detalleFacturaService: DetalleFacturaService,
     ) {
     }
 
@@ -46,11 +50,70 @@ export class FacturaController{
         }
     }
 
+
+    @Get('vista/inicio/usuario/:id') // poner la direccion
+    async obtenerFacturasUnUsuario(
+        @Res() res,
+        @Param() paramRuta
+    ) {
+        let resultadoEncontrado
+        const id = Number(paramRuta.id)
+        if (id === undefined){
+            try {
+                resultadoEncontrado = await this._facturaService.buscarTodosUnUsuario(id)
+
+                if(resultadoEncontrado){
+                    console.log(resultadoEncontrado)
+                    return res.render('factura/inicio', {arregloFacturas: resultadoEncontrado}) // con esto mando resultadoEcontrado hasta usuario/inicio
+                } else {
+                    throw new NotFoundException('NO se encontraron facturas')
+                }
+
+            } catch(error){
+                throw new InternalServerErrorException('Error encontrando facturas')
+            }
+        } else {
+            throw new InternalServerErrorException('Error encontrando facturas')
+        }
+
+
+    }
+
+
+
+
+
     @Get('vista/crear')
-    crearFacturaVista(
+    async crearFacturaVista(
         @Query() parametrosConsulta,
         @Res() res
     ){
+
+        let arregloUsuarioProductos
+
+        try {
+            arregloUsuarioProductos = await this._usuarioProductoService.buscarTodos()
+        } catch(error) {
+            throw new NotFoundException('Error obteniendo datos.')
+        }
+
+        if(arregloUsuarioProductos){
+            return res.render('factura/crear',
+                {
+                    error: parametrosConsulta.error,
+                    producto: parametrosConsulta.producto,
+                    stock: parametrosConsulta.stock,
+                    imagen: parametrosConsulta.imagen,
+                    precio: parametrosConsulta.precio,
+                    usuario: parametrosConsulta.usuario,
+                    unidad: parametrosConsulta.unidad,
+                    arregloUsuarioProductos: arregloUsuarioProductos
+                })
+        } else {
+            throw new NotFoundException('No hay suficientes datos para esta acción. Inténtelo más tarde.')
+        }
+
+
         return res.render('factura/crear',
             {
                 error: parametrosConsulta.error,
@@ -59,6 +122,7 @@ export class FacturaController{
                 fecha: parametrosConsulta.fecha,
                 cumplido: parametrosConsulta.cumplido,
                 usuario: parametrosConsulta.usuario,
+                arregloUsuarioProductos: arregloUsuarioProductos,
             })
     }
 
@@ -78,7 +142,7 @@ export class FacturaController{
         let respuestaCreacionFactura
         const facturaValidada = new FacturaCreateDto()
         facturaValidada.cumplido = paramBody.cumplido
-        facturaValidada.usuarioId = paramBody.usuario
+        facturaValidada.usuarioId = Number(paramBody.usuario)
 
         //console.log(paramBody)
 
@@ -124,25 +188,30 @@ export class FacturaController{
     ) {
         const id = Number(parametrosRuta.id)
         let facturaEncontrado
+        let detalleFacturaEncontrado
 
         try {
             facturaEncontrado = await this._facturaService.buscarUno(id)
+            detalleFacturaEncontrado = await this._detalleFacturaService.buscarTodos(id)
+
         } catch (error) {
             console.error('Error del servidor')
-            return res.redirect('/factura/vista/inicio?mensaje=Error buscando factura')
+            return res.redirect('/factura/vista/inicio?mensaje=Error obteniendo datos.')
         }
 
-        if (facturaEncontrado){
+        if (facturaEncontrado && detalleFacturaEncontrado){
             console.log(facturaEncontrado)
+            console.log("DETALLE FACTURA:"+ detalleFacturaEncontrado)
             return res.render(
-                'factura/crear',
+                'factura/editar',
                 {
                     error: parametrosConsulta.error,
-                    factura: facturaEncontrado
+                    factura: facturaEncontrado,
+                    orden: detalleFacturaEncontrado,
                 }
             )
         } else {
-            return res.redirect('/factura/vista/inicio?mensaje=Factura no encontrado')
+            return res.redirect('/factura/vista/inicio?mensaje=No hay suficientes datos para realizar esta acción. Inténtelo más tarde')
         }
     }
 
@@ -159,10 +228,7 @@ export class FacturaController{
         console.log('LLEGA:'+ paramBody)
         const facturaValidada = new FacturaUpdateDto()
         facturaValidada.id = Number(parametrosRuta.id)
-        facturaValidada.fecha = paramBody.fecha
-        facturaValidada.total = paramBody.total
         facturaValidada.cumplido = paramBody.cumplido
-        //facturaValidada.usuarioId = paramBody.usuario.usuarioId
 
         const errores: ValidationError[] = await validate(facturaValidada)
         if(errores.length > 0){

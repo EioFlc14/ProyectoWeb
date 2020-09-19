@@ -24,11 +24,11 @@ export class DetalleFacturaCreateDto{
 
     @IsNotEmpty()
     @IsNumberString()
-    usuarioProductoId:string
+    usuarioProductoId:number
 
     @IsNotEmpty()
     @IsNumberString()
-    facturaId:string
+    facturaId:number
 
 
 }

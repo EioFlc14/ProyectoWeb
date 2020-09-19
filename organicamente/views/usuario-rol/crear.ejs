@@ -6,13 +6,23 @@
 <% }%>
 
 <form action="/usuario-rol/crearDesdeVista" method="POST">
-    <% const existeUsuario = typeof usuario !== 'undefined'%>
-    <label for="usuario">Usuario:</label>
-    <input id="usuario" type="text" name="usuario" value="<%= existeUsuario ? usuario: '' %>">
+
+    <label for="usuario">Elija el usuario:</label>
+    <select name="usuario" id="usuario">
+        <% arregloUsuarios.forEach((objeto) => { %>
+           <option value="<%= objeto.usuarioId%>" selected ><%= objeto.apellido + ' ' + objeto.nombre%></option>
+        <%})%>
+    </select>
     <br>
-    <% const existeRol = typeof rol !== 'undefined'%>
-    <label for="rol">Rol:</label>
-    <input id="rol" type="text" name="rol" value="<%= existeRol ? rol: '' %>">
+
+    <br>
+
+    <label for="rol">Elija el rol:</label>
+    <select name="rol" id="rol">
+        <% arregloRoles.forEach((objeto) => { %>
+            <option value="<%= objeto.rolId%>" selected ><%= objeto.nombre%></option>
+        <%})%>
+    </select>
     <br>
 
     <button type="submit">SUBMIT</button>

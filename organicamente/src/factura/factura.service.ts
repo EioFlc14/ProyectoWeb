@@ -21,6 +21,20 @@ export class FacturaService{
         return this.repositorio.find({relations:['usuario']})
     }
 
+    buscarTodosUnUsuario(id:number){
+        return this.repositorio.find({
+            relations:[
+                'usuario'
+            ],
+            where: [
+                {
+                    usuario: id
+                }
+            ]
+        })
+    }
+
+
     buscarUno(id: number){
         return this.repositorio.findOne(id,{relations:['usuario']})
     }

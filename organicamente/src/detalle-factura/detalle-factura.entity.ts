@@ -26,7 +26,7 @@ export class DetalleFacturaEntity{
     @Column({
         name: 'precio',
         type: "decimal",
-        precision: 5, // enteros
+        precision: 6, // enteros
         scale: 3, // decimales
         nullable: false,
     })
