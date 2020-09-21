@@ -18,10 +18,10 @@ export class FacturaCreateDto{
     @IsNumber()
     id:number */
 
-/*    @IsNotEmpty()
+    @IsNotEmpty()
     @IsNumberString()
     @IsDecimal({'decimal_digits': '0,3'})
-    total:string */
+    total:string
 
   /*  @IsNotEmpty()
     //@IsDateString()
@@ -29,7 +29,7 @@ export class FacturaCreateDto{
 
     @IsNotEmpty()
     @IsNumberString()
-    usuarioId:number
+    usuarioId:string
 
     @IsNotEmpty()
     @MaxLength(5)

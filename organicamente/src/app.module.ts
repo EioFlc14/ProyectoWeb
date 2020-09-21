@@ -18,6 +18,7 @@ import {UnidadEntity} from "./unidad/unidad.entity";
 import {UsuarioEntity} from "./usuario/usuario.entity";
 import {UsuarioProductoEntity} from "./usuario-producto/usuario-producto.entity";
 import {UsuarioRolEntity} from "./usuario-rol/usuario-rol.entity";
+import {UsuarioService} from "./usuario/usuario.service";
 
 @Module({
   imports: [
@@ -50,10 +51,10 @@ import {UsuarioRolEntity} from "./usuario-rol/usuario-rol.entity";
         synchronize: false,
         dropSchema: false
 
-
-      })
+      }),
+      TypeOrmModule.forFeature([UsuarioEntity] ,'default')
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UsuarioService],
 })
 export class AppModule {}

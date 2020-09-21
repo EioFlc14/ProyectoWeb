@@ -1,7 +1,0 @@
-
-function rol(){
-
-    import { } from
-
-}
-

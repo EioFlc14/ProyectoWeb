@@ -53,7 +53,34 @@ export class  UsuarioService {
         return this.repositorio.find(busquedaEjemplo)
     }
 
+    emailRegistrado(email: string){
+        let busquedaEjemplo: FindManyOptions<UsuarioEntity>
 
+        busquedaEjemplo = {
+            where: [
+                {
+                    email: email,
+                }
+            ]
+        }
+
+        return this.repositorio.find(busquedaEjemplo)
+    }
+
+
+    usernameRegistrado(username: string){
+        let busquedaEjemplo: FindManyOptions<UsuarioEntity>
+
+        busquedaEjemplo = {
+            where: [
+                {
+                    username: username,
+                }
+            ]
+        }
+
+        return this.repositorio.find(busquedaEjemplo)
+    }
 
 }
 

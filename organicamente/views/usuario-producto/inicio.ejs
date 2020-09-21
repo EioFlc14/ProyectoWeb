@@ -1,41 +1,144 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+</head>
+
+<body>
+
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
 <%- include('../compartido/menu/menu-component') %>
 
-<a href="/usuario-producto/vista/crear">
-    <button>
-        CREAR
-    </button>
-</a>
+<% let textoBoton = '' %>
+<% let rutaBoton = '' %>
+<% let esProductorAdmin %>
+<% if (rol === 'productor' || rol === 'admin') { %>
+    <% esProductorAdmin = true %>
+<% } %>
+<% let metodo = '' %>
+<% let ruta = '' %>
+<% let usuario = 0 %>
 
-<table>
-    <tr>
-        <th>Producto</th>
-        <th>Stock</th>
-        <th>Precio</th>
-        <th>Unidad</th>
-        <th>Usuario</th>
-        <th>Imagen</th>
+<% usuario = 3          /* Este debe ser un dato de dataSesion, el ID del productor logeado        arregloUsuarioProductos[0].usuarioId */ %>
 
-    </tr>
+<br>
+<!-- BUSQUEDA-->
+<div class="col-md-12 col-lg-12 ml-auto">
+    <div class="row">
+        <div class=" col-md-12 col-lg-6">
+            <form action="/usuario-producto/vista/inicio/<%= rol %>/<%= usuario %>" method="get">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-white px-4 border-md border-right-0">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+                            <path fill-rule="evenodd"
+                                  d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+                        </svg>
+                    </span>
 
-    <% arregloUsuarioProductos.forEach((objeto) => { %>
-        <tr>
-            <td><%= objeto.producto.nombre%></td>
-            <td><%= objeto.stock %></td>
-            <td><%= objeto.precio %></td>
-            <td><%= objeto.unidad.nombre%></td>
-            <td><%= objeto.usuario.username%></td>
-            <td><img src="/imagenes/<%=objeto.imagen%>" width="400" height="300" /></td>
-            <td>
-                <button>Ver</button>
-                <a href="/usuario-producto/vista/editar/<%=objeto.usuarioProductoId%>">
-                    <button>Editar</button>
+                    <input id="busqueda" type="text" name="busqueda" placeholder="Buscar"
+                           class="form-control bg-white border-left-0 border-md">
+                    <button type="submit" class="btn btn-success">BUSCAR</button>
+
+                </div>
+            </form>
+        </div>
+
+        <% if (esProductorAdmin){ %>
+            <div class="input-group col-lg-6 mb-4 ">
+                <a href="/usuario-producto/vista/crear" class="btn btn-success btn-lg btn-block active ml-auto"
+                   role="button"
+                   aria-pressed="true">
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill"
+                         fill="currentColor"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                    </svg>
+                    Nuevo Producto
                 </a>
-                <form action="/usuario-producto/eliminarDesdeVista/<%= objeto.usuarioProductoId %>" method="post">
-                    <button>Eliminar</button>
-                </form>
-            </td>
-        </tr>
-    <% }) %>
+            </div>
 
-</table>
+        <% } %>
+    </div>
+</div>
+
+<% if(arregloUsuarioProductos.length > 0){ %>
+
+    <% if (rol === 'cliente' ){ %>
+        <% esProductorAdmin = false %>
+        <% textoBoton = 'Comprar' %>
+        <% rutaBoton = '/factura/vista/crear' %>
+        <% metodo = 'post' %>
+    <% } else if (rol === 'productor' || rol === 'admin') { %>
+        <% esProductorAdmin = true %>
+        <% textoBoton = 'Editar' %>
+        <% rutaBoton = '/usuario-producto/vista/editar' %>
+        <% metodo = 'get' %>
+
+    <% } %>
+    <br>
+
+    <div class="row row-cols-1 row-cols-md-5 ml-2 mr-2">
+        <% arregloUsuarioProductos.forEach((objeto) => { %>
+            <% ruta = rutaBoton + '/' + objeto.usuarioProductoId %>
+            <div class="col mb-4">
+                <div class="card h-100">
+                    <img src="/imagenes/<%= objeto.imagen %>" class="card-img-top" alt="imagen" height="200"
+                         width="100">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= objeto.producto %></h5>
+                        <p class="card-text">Precio: <%= objeto.precio %></p>
+                        <p class="card-text">Unidad: <%= objeto.unidad %></p>
+                        <p class="card-text">Productor: <%= objeto.apellido + ' ' + objeto.nombre %></p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="<%= ruta %>" class="btn btn-success btn-lg btn-block "><%= textoBoton %></a>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+<% } else { %>
+    <br>
+    <div class="col-md-6 col-lg-6 mr-auto ">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-group col-lg-12 mx-auto mb-0">
+                    <div class="alert alert-success" role="alert">
+                        <a class="btn-block" href="/principal">No hay productos para mostrar. Regresar a pantalla
+                            principal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
+

@@ -15,16 +15,16 @@ import {UsuarioProductoCreateDto} from "./dto/usuario-producto.create-dto";
 import {UsuarioProductoUpdateDto} from "./dto/usuario-producto.update-dto";
 import {UsuarioProductoEntity} from "./usuario-producto.entity";
 import {FileInterceptor} from "@nestjs/platform-express";
-import { diskStorage } from 'multer';
-import {defaultImagen, editFileName, editFileNameEditar, imageFileFilter} from "../utils/file-uploading.utils";
+import {diskStorage} from 'multer';
+import {defaultImagen, editFileName, imageFileFilter} from "../utils/file-uploading.utils";
 import {ProductoService} from "../producto/producto.service";
 import {UnidadService} from "../unidad/unidad.service";
 
-const fs = require('fs')
+const fs = require('fs') // para eliminar las fotos que quedan luego de actualizar una de estas.
 
 
 @Controller('usuario-producto')
-export class UsuarioProductoController{
+export class UsuarioProductoController {
 
     constructor(
         private readonly _usuarioProductoService: UsuarioProductoService,
@@ -34,31 +34,55 @@ export class UsuarioProductoController{
     }
 
 
-    @Get('vista/inicio') // poner la direccion
+    @Get('vista/inicio/:rol/:id') // poner la direccion
     async obtenerUsuarioProductos(
+        @Param() parametrosRuta,
+        @Query() parametrosConsulta,
         @Res() res
     ) {
-        let resultadoEncontrado
+
+        console.log("AVER: "+ parametrosConsulta.busqueda)
+        let resultadoEncontrado = []
         try {
-            resultadoEncontrado = await this._usuarioProductoService.buscarTodos()
-        } catch(error){
-            throw new InternalServerErrorException('Error encontrando los productos del usuario')
+            if(parametrosRuta.rol === 'cliente' || parametrosRuta.rol === 'admin'){
+                resultadoEncontrado = await this._usuarioProductoService.busquedaProductoCamposCliente(parametrosConsulta.busqueda)
+            } else if(parametrosRuta.rol === 'productor' ){
+                const id = Number(parametrosRuta.id)
+                resultadoEncontrado = await this._usuarioProductoService.busquedaProductoCamposProductor(parametrosConsulta.busqueda, id)
+            }
+
+            return res.render('usuario-producto/inicio', {
+                arregloUsuarioProductos: resultadoEncontrado,
+                rol: parametrosRuta.rol,
+            })
+
+        } catch (error) {
+            console.error(error)
+            return res.render('usuario-producto/inicio', {
+                arregloUsuarioProductos: resultadoEncontrado,
+                rol: parametrosRuta.rol,
+            })
         }
 
-        if(resultadoEncontrado){
+/*        if (resultadoEncontrado) {
+
             console.log(resultadoEncontrado)
-            return res.render('usuario-producto/inicio', {arregloUsuarioProductos: resultadoEncontrado})
+            return res.render('usuario-producto/inicio', {
+                arregloUsuarioProductos: resultadoEncontrado,
+                rol: parametrosRuta.rol,
+            })
         } else {
             throw new NotFoundException('NO se encontraron productos del usuario')
-        }
+        }*/
     }
+
 
 
     @Get('vista/crear')
     async crearUsuarioProductoVista(
         @Query() parametrosConsulta,
         @Res() res
-    ){
+    ) {
 
         let arregloProductos
         let arregloUnidades
@@ -66,11 +90,11 @@ export class UsuarioProductoController{
         try {
             arregloProductos = await this._productoService.buscarTodos()
             arregloUnidades = await this._unidadService.buscarTodos()
-        } catch(error) {
+        } catch (error) {
             throw new NotFoundException('Error obteniendo datos.')
         }
 
-        if(arregloUnidades && arregloProductos){
+        if (arregloUnidades && arregloProductos) {
             console.log("ARREGLO PRODUCTOS:" + arregloProductos)
             console.log("ARREGLO UNIDADES:" + arregloUnidades)
             return res.render('usuario-producto/crear',
@@ -101,15 +125,15 @@ export class UsuarioProductoController{
                 filename: editFileName,
             }),
             fileFilter: imageFileFilter
-    }))
+        }))
     async crearDesdeVista(
         @Body() paramBody,
         @Res() res,
         @Req() req,
         @UploadedFile() file
-    ){
-        if(req.fileValidationError){
-            return res.redirect('/usuario-producto/vista/crear?error='+req.fileValidationError)
+    ) {
+        if (req.fileValidationError) {
+            return res.redirect('/usuario-producto/vista/crear?error=' + req.fileValidationError)
         }
 
         let respuestaCreacionUsuario
@@ -117,7 +141,7 @@ export class UsuarioProductoController{
         usuarioProductoValidado.productoProductoId = paramBody.producto
         usuarioProductoValidado.stock = paramBody.stock
         usuarioProductoValidado.precio = paramBody.precio
-        if (file == undefined){
+        if (file == undefined) {
             usuarioProductoValidado.imagen = defaultImagen
         } else {
             usuarioProductoValidado.imagen = file.path.split('/')[2]
@@ -127,10 +151,10 @@ export class UsuarioProductoController{
 
         const errores: ValidationError[] = await validate(usuarioProductoValidado)
         const texto = `&producto=${paramBody.producto}&stock=${paramBody.stock}&precio=${paramBody.precio}&imagen=${paramBody.imagen}&unidad=${paramBody.unidad}&usuario=${paramBody.usuario}`
-        if(errores.length > 0){
-            console.error('Errores:',errores);
+        if (errores.length > 0) {
+            console.error('Errores:', errores);
             const error = 'Error en el formato de los datos'
-            return res.redirect('/usuario-producto/vista/crear?error='+error+texto)
+            return res.redirect('/usuario-producto/vista/crear?error=' + error + texto)
         } else {
             try {
                 paramBody.stock = Number(paramBody.stock)
@@ -138,7 +162,7 @@ export class UsuarioProductoController{
                 paramBody.producto = Number(paramBody.producto)
                 paramBody.unidad = Number(paramBody.unidad)
                 paramBody.usuario = Number(paramBody.usuario)
-                if (file == undefined){
+                if (file == undefined) {
                     paramBody.imagen = defaultImagen
                 } else {
                     paramBody.imagen = file.path.split('/')[2]
@@ -151,17 +175,17 @@ export class UsuarioProductoController{
 
                 console.log(usuarioProducto)
                 respuestaCreacionUsuario = await this._usuarioProductoService.crearUno(usuarioProducto)
-            } catch (e){
+            } catch (e) {
                 console.error(e)
                 const errorCreacion = 'Error al crear el Usuario'
-                return res.redirect('/usuario-producto/vista/crear?error='+errorCreacion+texto)
+                return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
             }
 
-            if(respuestaCreacionUsuario){
+            if (respuestaCreacionUsuario) {
                 return res.redirect('/usuario-producto/vista/inicio') // en caso de que all esté OK se envía al inicio
             } else {
                 const errorCreacion = 'Error al crear el Usuario'
-                return res.redirect('/usuario-producto/vista/crear?error='+errorCreacion+texto)
+                return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
             }
         }
     }
@@ -185,7 +209,7 @@ export class UsuarioProductoController{
             return res.redirect('/usuario-producto/vista/inicio?mensaje=Error obteniendo datos')
         }
 
-        if (usuarioProductoEncontrado){
+        if (usuarioProductoEncontrado) {
             return res.render(
                 'usuario-producto/crear',
                 {
@@ -199,9 +223,6 @@ export class UsuarioProductoController{
         }
 
     }
-
-
-
 
 
     @Post('editarDesdeVista/:id')
@@ -218,25 +239,25 @@ export class UsuarioProductoController{
         @Body() paramBody,
         @Res() res,
         @UploadedFile() file
-    ){
+    ) {
 
         const usuarioProductoValidado = new UsuarioProductoUpdateDto()
         usuarioProductoValidado.id = Number(parametrosRuta.id)
         usuarioProductoValidado.stock = paramBody.stock
         usuarioProductoValidado.precio = paramBody.precio
-        if (file == undefined){
+        if (file == undefined) {
             usuarioProductoValidado.imagen = defaultImagen
         } else {
             usuarioProductoValidado.imagen = file.path.split('/')[2]
         }
 
         const errores: ValidationError[] = await validate(usuarioProductoValidado)
-        if(errores.length > 0){
-            console.error('Errores:',errores);
-            return res.redirect('/usuario-producto/vista/inicio?mensaje= Error en el formato de los datos')
+        if (errores.length > 0) {
+            console.error('Errores:', errores);
+            return res.redirect('/principal?error= Error al editar el producto.')
         } else {
 
-            if (file == undefined){
+            if (file == undefined) {
                 paramBody.imagen = defaultImagen
             } else {
                 paramBody.imagen = file.path.split('/')[2]
@@ -251,26 +272,25 @@ export class UsuarioProductoController{
 
             try {
                 await this._usuarioProductoService.editarUno(usuarioProducto)
-                return res.redirect('/usuario-producto/vista/inicio?mensaje= Usuario Producto editado correctamente') // en caso de que all esté OK se envía al inicio
-            } catch (e){
+                return res.redirect('/principal?exito= Producto editado correctamente') // en caso de que all esté OK se envía al inicio
+            } catch (e) {
                 console.error(e)
-                const errorCreacion = 'Error editando Usuario Producto'
-                return res.redirect('/usuario-producto/vista/inicio?mensaje='+errorCreacion)
+                const errorCreacion = 'Error al editar el producto.'
+                return res.redirect('/principal?error=' + errorCreacion)
             }
         }
     }
-
 
 
     @Post('eliminarDesdeVista/:id')
     async eliminarDesdeVista(
         @Param() paramRuta,
         @Res() res,
-    ){
-        try{
+    ) {
+        try {
             await this._usuarioProductoService.eliminarUno(Number(paramRuta.id))
             return res.redirect('/usuario-producto/vista/inicio?mensaje= Usuario Producto Eliminado')
-        } catch(error){
+        } catch (error) {
             console.error(error)
             return res.redirect('/usuario-producto/vista/inicio?error=Error eliminando usuario producto ')
         }

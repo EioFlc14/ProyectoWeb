@@ -1,43 +1,67 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente - Login</title>
+
+</head>
+
+<body>
+
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
 <%- include('../compartido/menu/menu-component') %>
 
-<a href="/factura/vista/crear">
+<a href="/usuario-producto/vista/crear">
     <button>
         CREAR
     </button>
 </a>
 
-<% if(typeof parametrosConsulta != 'undefined') {%>
-    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
-<% }%>
-
-<table>
-    <tr>
-        <th>N° FACTURA</th>
-        <th>FECHA</th>
-        <th>TOTAL</th>
-        <th>CUMPLIDO</th>
-        <th>USUARIO</th>
-    </tr>
-
-    <% arregloFacturas.forEach((objeto) => { %>
-            <tr>
-                <td><%= objeto.facturaId %></td>
-                <td><%= objeto.fecha %> </td>
-                <td><%= objeto.total %> </td>
-                <td><%= objeto.cumplido %> </td>
-                <td><%= objeto.usuario.nombre %> </td>
-                <td>
-                    <button>Ver</button>
-                    <a href="/factura/vista/editar/<%=objeto.facturaId%>">
-                        <button>Editar</button>
-                    </a>
-
-<!--                    <form action="/factura/eliminarDesdeVista/<%= objeto.facturaId %>" method="post">
-                        <button>Eliminar</button>
-                    </form>-->
-                </td>
-            </tr>
+<div class="row row-cols-1 row-cols-md-5">
+    <% arregloUsuarioProductos.forEach((objeto) => { %>
+        <div class="col mb-4">
+            <div class="card h-100">
+                <img src="/imagenes/<%= objeto.imagen %>" class="card-img-top" alt="imagen" height="200" width="100">
+                <div class="card-body">
+                    <h5 class="card-title"><%= objeto.producto.nombre %></h5>
+                    <p class="card-text">Precio unitario: <%= objeto.precio %></p>
+                    <p class="card-text">Unidad: <%= objeto.unidad.nombre %></p>
+                    <p class="card-text">Productor: <%= objeto.usuario.apellido + ' ' + objeto.usuario.nombre %></p>
+                </div>
+                <a href="/usuario-producto/vista/editar/<%= objeto.usuarioProductoId %>" class="btn btn-success">EDITAR</a>
+            </div>
+        </div>
     <% }) %>
+</div>
 
-</table>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+

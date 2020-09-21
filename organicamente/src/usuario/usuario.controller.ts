@@ -222,52 +222,5 @@ export class UsuarioController{
 
 
 
-    @Get('vista/login')  // esto de seguro es en otro controler pero HASTA ESO SE DEJA AQUÍ
-    login(
-        @Query() paramConsulta,
-        @Res() res,
-    ){
-        return res.render('usuario/login',
-            {
-                error: paramConsulta.error,
-            })
-    }
-
-
-
-    @Post('loginDesdeVista')
-    async loginDesdeVista(
-        @Body() paramBody,
-        @Res() res,
-    ){
-
-        try {
-
-            //console.log("BODY PARAM:" + paramBody.user + ' ' + paramBody.password)
-            const user = paramBody.user
-            const password = paramBody.password
-
-            const respuestaLogeo = await this._usuarioService.validarLogin(user, password)
-
-            //console.log("RESPUESTA LOGEO: " + respuestaLogeo)
-            if (respuestaLogeo.length == 1){
-                // Se manda a la pantalla principal
-
-                return res.redirect('/producto/vista/inicio')
-
-            } else {
-                // MENSAJE de que nadie está logeado con esa cuenta.
-                return res.redirect('/usuario/vista/login?error=Usuario no encontrado. Revise sus credenciales.')
-
-            }
-
-        } catch (error){
-            console.error('Error del servidor')
-            return res.redirect('/usuario/vista/login?error=Error en el servidor.')
-        }
-
-    }
-
-
 
 }

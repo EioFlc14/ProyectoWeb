@@ -1,73 +1,120 @@
-<% const existeFactura = typeof factura !== 'undefined' %>
+<!doctype html>
 
-<% let orden = [] %>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+    <script type="application/javascript">
+        function cambiarTotal() {
+            document.querySelector("#cantidad")
+                .addEventListener("blur", function () {
+                    const total = Number(document.getElementById("precio").value) * Number(document.getElementById("cantidad").value)
+                    document.getElementById("total").value = total.toFixed(2);
+                });
+        }
+    </script>
 
 
+</head>
 
-<% if(typeof error != 'undefined'){%>
+<body>
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+<%- include('../compartido/menu/menu-component') %>
+
+<% if(typeof error != 'undefined'){ %>
     <p> MENSAJE: <%= error %></p>
-<% }%>
-
-<!--<form action=" <%= existeFactura ? '/factura/editarDesdeVista/' + factura.facturaId : '/factura/crearDesdeVista'%>" method="POST">-->
-<form action="/factura/crearDesdeVista" method="POST">
-
-    <h3>Poner algún título pepa para que no se vea tan vacío</h3>
-
-    <label for="total">Total:</label>
-    <input id="total" type="text" disabled name="total" value=0.0>
-    <br>
+<% } %>
+<br>
+<div class="form-row">
 
 
-    <table>
-        <tr>
-            <th>NOMBRE</th>
-            <th>PRECIO UNITARIO</th>
-            <th>UNIDAD DE VENTA</th>
-            <th>IMAGEN</th>
-            <th>VENDEDOR</th>
-            <th>ACCIONES</th>
-        </tr>
+    <div class="col-md-6 col-lg-5 ml-5">
+        <br>
+        <h5>
+            <span class="badge badge-pill badge-success">Imagen del producto a comprar</span>
+        </h5>
+        <br>
+        <img src="/imagenes/<%= producto.imagen %>" width="800" height="1000" alt=""
+             class="img-fluid mb-3 d-none d-md-block">
+    </div>
 
 
-        ARREGLAR ESTO *********************************************************
-        <% arregloUsuarioProductos.forEach((objeto) => { %>
-            <tr>
-                <td ><%= objeto.producto.nombre %></td>
-                <td ><%= objeto.precio %> </td>
-                <td><%= objeto.unidad.nombre %> </td>
-                <td><img src="/imagenes/<%= objeto.imagen %>" width="400" height="300" ></td>
-                <td><%= objeto.usuario.apellido + ' ' + objeto.usuario.nombre %> </td>
+    <div class="col-md-6 col-lg-5 ml-lg-5">
 
-                <td><input id="cantidad" type="number"></td>
-                <td>
-                    <button type="button" onclick="cargarProducto(orden, document.getElementById('cantidad').value,objeto.precio, objeto.producto.productoId, objeto.producto.nombre)">AÑADIR A COMPRA</button>
-                </td>
-            </tr>
-        <% console.log("ESTA ES LA ORDEN:*********" + orden) %>
-        <% }) %>
+        <br>
+        <h1><span class="badge badge-success">Proceso de Compra</span></h1>
+        <br>
 
-    </table>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Productor:</span>
+                <input class="form-control" value="<%= producto.usuario.apellido + ' ' + producto.usuario.nombre %>"
+                       disabled>
+            </div>
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Telefono del productor:</span>
+                <input type="text" class="form-control" value="<%= producto.usuario.telefono %>" disabled>
+            </div>
+        </div>
+        <div class="form-group">
+            <span class="badge badge-pill badge-success">Dirección del productor:</span>
+            <input type="text" class="form-control" value="<%= producto.usuario.direccion %>" disabled>
+        </div>
+        <div class="form-group">
+            <span class="badge badge-pill badge-success">Nombre del producto:</span>
+            <input type="text" class="form-control" value="<%= producto.producto.nombre %>" disabled>
+        </div>
+        <form action="/factura/crearDesdeVista?usuarioProducto=<%=producto.usuarioProductoId%>" method="POST">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <span class="badge badge-pill badge-success">Precio ($):</span>
+                    <input id="precio" type="text" class="form-control" value="<%= producto.precio %>"  name="precio" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <span class="badge badge-pill badge-success">Cantidad:</span>
+                    <input id="cantidad" type="number" class="form-control" name="cantidad" onchange="cambiarTotal()" required>
+                </div>
+                <div class="form-group col-md-4">
+                    <span class="badge badge-pill badge-success">Total ($):</span>
+                    <input id="total" type="text" name="total"  class="form-control" value=0.0 readonly >
+                </div>
+            </div>
+            <br>
+            <br>
+            <button type="submit" class="btn btn-success btn-lg btn-block">COMPRAR</button>
+        </form>
+    </div>
 
-
-
-
-
-    <table>
-        <tr>
-            <th>CANTIDAD</th>
-            <th>PRECIO</th>
-            <th>VALOR</th>
-            <th>PRODUCTO</th>
-        </tr>
-    </table>
-
-
-
-
-    <button type="submit">SUBMIT</button>
-    <button type="reset">RESET</button>
-
-</form>
+</div>
 
 
 <%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+
+
+
+
+
+
