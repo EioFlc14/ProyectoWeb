@@ -7,7 +7,7 @@ import {
     Param,
     Post,
     Query,
-    Res
+    Res, Session
 } from "@nestjs/common";
 
 import {validate, ValidationError} from "class-validator";
@@ -32,269 +32,275 @@ export class FacturaController {
     }
 
 
-    /*  @Get('vista/inicio') // poner la direccion
-      async obtenerFacturas(
-          @Res() res
-      ) {
-          let resultadoEncontrado
-          try {
-              resultadoEncontrado = await this._facturaService.buscarTodos()
-          } catch(error){
-              throw new InternalServerErrorException('Error encontrando facturas')
-          }
-
-
-          if(resultadoEncontrado){
-              console.log(resultadoEncontrado)
-              return res.render('factura/inicio', {arregloFacturas: resultadoEncontrado}) // con esto mando resultadoEcontrado hasta usuario/inicio
-          } else {
-              throw new NotFoundException('NO se encontraron facturas')
-          }
-      } */
-
-
-    @Get('vista/inicio/:id')   // para el productor - MIS PEDIDOS
-    async obtenerFacturasEspecificas(
-        @Res() res,
-        @Param() parametrosRuta
-    ) {
-        let resultadoEncontrado
-        try {
-            const id = Number(parametrosRuta.id)
-            resultadoEncontrado = await this._facturaService.buscarFacturasEspecificas(id)
-        } catch (error) {
-            throw new InternalServerErrorException('Error encontrando facturas')
-        }
-
-
-        if (resultadoEncontrado) {
-            console.log(resultadoEncontrado)
-            return res.render('factura/inicio', {arregloFacturas: resultadoEncontrado}) // con esto mando resultadoEcontrado hasta usuario/inicio
-        } else {
-            throw new NotFoundException('NO se encontraron facturas')
-        }
-    }
-
-
-    @Get('vista/inicio/usuario/:id') // para el cliente - MIS PEDIDOS
+    @Get('vista/inicio/:rol')
     async obtenerFacturasUnUsuario(
         @Res() res,
-        @Param() paramRuta
+        @Param() paramRuta,
+        @Query() parametrosConsulta,
+        @Session() session,
     ) {
-        let resultadoEncontrado
-        const id = Number(paramRuta.id)
-        if (id === undefined) {
-            try {
-                resultadoEncontrado = await this._facturaService.buscarTodosUnUsuario(id)
+        if (session.usuarioId) {
+            const id = session.usuarioId
+            if (id != undefined && paramRuta.rol != undefined) {
+                try {
+                    if (parametrosConsulta.busqueda == undefined) {
+                        parametrosConsulta.busqueda = ''
+                    }
 
-                if (resultadoEncontrado) {
-                    console.log(resultadoEncontrado)
-                    return res.render('factura/inicio', {arregloFacturas: resultadoEncontrado}) // con esto mando resultadoEcontrado hasta usuario/inicio
-                } else {
-                    throw new NotFoundException('NO se encontraron facturas')
+                    let resultadoEncontrado
+                    if (paramRuta.rol == 'cliente') {
+                        resultadoEncontrado = await this._facturaService.buscarTodosUnUsuario(id, parametrosConsulta.busqueda)
+                    } else if (paramRuta.rol == 'productor') {
+                        resultadoEncontrado = await this._facturaService.buscarFacturasEspecificas(id, parametrosConsulta.busqueda)
+                    } else if (paramRuta.rol == 'admin') {
+                        resultadoEncontrado = await this._facturaService.buscarTodos(parametrosConsulta.busqueda)
+                    }
+                    const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+                    const esProductor = session.roles.some((rol) => rol == 'productor')
+                    const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+
+                    if (resultadoEncontrado) {
+                        console.log(resultadoEncontrado)
+                        return res.render('factura/inicio',
+                            {
+                                arregloFacturas: resultadoEncontrado,
+                                rol: paramRuta.rol,
+                                id: session.usuarioId,
+                                esAdministrador: esAdministrador,
+                                esProductor: esProductor,
+                                esCliente: esCliente,
+                            })
+                    } else {
+                        const errorCreacion = 'No se encontraron facturas para mostrar.'
+                        return res.redirect('/principal?error=' + errorCreacion)
+                    }
+
+                } catch (error) {
+                    const errorCreacion = 'Error al buscar facturas. Inténtelo más tarde.'
+                    return res.redirect('/principal?error=' + errorCreacion)
                 }
-
-            } catch (error) {
-                throw new InternalServerErrorException('Error encontrando facturas')
+            } else {
+                const errorCreacion = 'Error al buscar facturas. Inténtelo más tarde.'
+                return res.redirect('/principal?error=' + errorCreacion)
             }
         } else {
-            throw new InternalServerErrorException('Error encontrando facturas')
+            return res.redirect('/login')
         }
-
-
     }
 
 
     @Get('vista/crear/:id')
-    async crearFacturaVista( // esto debe cambiar para adaptar con lo que envio desde el boton comprar
-        @Param() parametrosConsulta,
-        @Res() res
+    async crearFacturaVista(
+        @Param() parametrosBody,
+        @Query() parametrosConsulta,
+        @Res() res,
+        @Session() session,
     ) {
-        const id = Number(parametrosConsulta.id)
-        let productoComprar
+        if (session.usuarioId) {
+            const id = Number(parametrosBody.id)
+            let productoComprar
+            let error
 
-        try {
-            productoComprar = await this._usuarioProductoService.buscarUno(id)
-        } catch (error) {
-            throw new NotFoundException('Error obteniendo datos.')
-        }
+            try {
+                productoComprar = await this._usuarioProductoService.buscarUno(id)
+            } catch (e) {
+                console.log(e)
+                error = 'Error al obtener datos. Inténtelo más tarde.'
+                return res.redirect('/principal?error=' + error)
+            }
 
-        if (productoComprar) {
-            console.log(productoComprar)
-            return res.render('factura/crear',
-                {
-                    error: parametrosConsulta.error,
-                    producto: productoComprar,
-                })
+            const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+            const esProductor = session.roles.some((rol) => rol == 'productor')
+            const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+            if (productoComprar) {
+                console.log(productoComprar)
+                return res.render('factura/crear',
+                    {
+                        error: parametrosConsulta.error,
+                        producto: productoComprar,
+                        id: session.usuarioId,
+                        esAdministrador:esAdministrador,
+                        esProductor: esProductor,
+                        esCliente: esCliente,
+                    })
+            } else {
+                error = 'Error al obtener datos. Inténtelo más tarde.'
+                return res.redirect('/principal?error=' + error)
+            }
+
         } else {
-            // mandar a la principal diciendo que no se pudo obtener los productos
-            throw new NotFoundException('No hay suficientes datos para esta acción. Inténtelo más tarde.')
+            return res.redirect('/login')
         }
 
     }
 
 
-    //@Post()
-    @Post('crearDesdeVista') // esto se va a mantener
+    @Post('crearDesdeVista')
     async crearDesdeVista(
         @Body() paramBody,
         @Query() paramConsulta,
         @Res() res,
+        @Session() session,
     ) {
 
-        console.log("PARAM BODY:" + paramBody.precio)
-        console.log("PARAM BODY:" + paramBody.cantidad)
-        console.log("PARAM BODY:" + paramBody.total)
-        const today = new Date();
-        const cumplido = 'No'
-        const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-        const dateTime = date + ' ' + time;
+        if (session.usuarioId) {
+            const today = new Date();
+            const cumplido = 'No'
+            const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+            const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+            const dateTime = date + ' ' + time;
 
-        paramBody.usuario = '3' // ************** ESTE VALOR SE LO DEBE SACAR DE LA SESIÓN.
+            paramBody.usuario = session.usuarioId
 
-        let respuestaCreacionFactura
-        const facturaValidada = new FacturaCreateDto()
-        facturaValidada.cumplido = cumplido
-        facturaValidada.usuarioId = paramBody.usuario
-        facturaValidada.total = paramBody.total
+            let respuestaCreacionFactura
+            const facturaValidada = new FacturaCreateDto()
+            facturaValidada.cumplido = cumplido
+            facturaValidada.total = paramBody.total
 
-        //console.log(paramBody)
+            const errores: ValidationError[] = await validate(facturaValidada)
+            if (errores.length > 0) {
+                console.log(errores)
+                const error = 'Error en el formato de los datos'
+                return res.redirect('/principal?error=' + error)
+            } else {
+                try {
+                    paramBody.total = Number(paramBody.total)
+                    paramBody.fecha = dateTime
+                    paramBody.cumplido = cumplido
+                    paramBody.usuario = Number(paramBody.usuario)
 
-        const errores: ValidationError[] = await validate(facturaValidada)
-        //const texto = `&total=${paramBody.total}&fecha=${paramBody.fecha}&cumplido=${paramBody.cumplido}&usuario=${paramBody.usuario}`
-        if (errores.length > 0) {
-            console.error('Errores:', errores);
-            const error = 'Error en el formato de los datos'
-            return res.redirect('/principal?error=' + error)
-        } else {
-            try {
-                paramBody.total = Number(paramBody.total)
-                paramBody.fecha = dateTime
-                paramBody.cumplido = cumplido
-                paramBody.usuario = Number(paramBody.usuario)
-
-                respuestaCreacionFactura = await this._facturaService.crearUno(paramBody)
-
-                if (respuestaCreacionFactura) {
-                    let respuestaCreacionDetalleFactura
-                    const detalleFactura = {
-                        cantidad: Number(paramBody.cantidad),
-                        precio: Number(paramBody.precio),
-                        valor: Number(paramBody.total),
-                        usuarioProducto: Number(paramConsulta.usuarioProducto),
-                        factura: Number(respuestaCreacionFactura.facturaId)
-                    } as unknown as DetalleFacturaEntity
-
-                    respuestaCreacionDetalleFactura = await this._detalleFacturaService.crearUno(detalleFactura)
-
-                    if (respuestaCreacionDetalleFactura) {
-                        const mensaje = 'Orden registrada exitosamente.'
-                        return res.redirect('/principal?exito=' + mensaje) // en caso de que all esté OK se envía al inicio
+                    if (paramBody.total <= 0.0) {
+                        const error = 'Debe ingresar una cantidad entera válida mayor a 0.'
+                        return res.redirect('/factura/vista/crear/' + Number(paramConsulta.usuarioProducto) + '?error=' + error)
                     } else {
-                        const errorCreacion = 'Error al registrar la orden.'
-                        return res.redirect('/principal?error=' + errorCreacion)
+                        const validarCantidad = await this._usuarioProductoService.buscarUno(Number(paramConsulta.usuarioProducto))
+
+                        if (Number(paramBody.cantidad) <= validarCantidad.stock) {
+                            respuestaCreacionFactura = await this._facturaService.crearUno(paramBody)
+                            if (respuestaCreacionFactura) {
+                                let respuestaCreacionDetalleFactura
+                                const detalleFactura = {
+                                    cantidad: Number(paramBody.cantidad),
+                                    precio: Number(paramBody.precio),
+                                    valor: Number(paramBody.total),
+                                    usuarioProducto: Number(paramConsulta.usuarioProducto),
+                                    factura: Number(respuestaCreacionFactura.facturaId)
+                                } as unknown as DetalleFacturaEntity
+
+                                respuestaCreacionDetalleFactura = await this._detalleFacturaService.crearUno(detalleFactura)
+
+                                if (respuestaCreacionDetalleFactura) {
+                                    const mensaje = 'Orden registrada exitosamente.'
+                                    return res.redirect('/principal?exito=' + mensaje)
+                                } else {
+                                    const errorCreacion = 'Error al registrar la orden.'
+                                    return res.redirect('/principal?error=' + errorCreacion)
+                                }
+                            } else {
+                                const errorCreacion = 'Error al registrar la orden.'
+                                return res.redirect('/principal?error=' + errorCreacion)
+                            }
+                        } else {
+                            const mensaje = 'Stock insuficiente.'
+                            return res.redirect('/factura/vista/crear/' + Number(paramConsulta.usuarioProducto) + '?error=' + mensaje)
+                        }
                     }
-                } else {
+                } catch (e) {
+                    console.error(e)
                     const errorCreacion = 'Error al registrar la orden.'
                     return res.redirect('/principal?error=' + errorCreacion)
                 }
-
-            } catch (e) {
-                console.error(e)
-                const errorCreacion = 'Error al registrar la orden.'
-                return res.redirect('/principal?error=' + errorCreacion)
             }
-
+        } else {
+            return res.redirect('/login')
         }
 
     }
 
 
-    @Get('vista/editar/:id') // Controlador
+    @Get('vista/editar/:rol/:idFactura')
     async editarFacturaVista(
         @Query() parametrosConsulta,
         @Res() res,
-        @Param() parametrosRuta
+        @Param() parametrosRuta,
+        @Session() session,
     ) {
-        const id = Number(parametrosRuta.id)
-        let facturaEncontrado
-        let detalleFacturaEncontrado
+        if (session.usuarioId) {
+            const id = Number(parametrosRuta.idFactura)
+            let facturaEncontrada
 
-        try {
-            facturaEncontrado = await this._facturaService.buscarUno(id)
-            detalleFacturaEncontrado = await this._detalleFacturaService.buscarTodos(id)
+            try {
+                facturaEncontrada = await this._facturaService.buscarUno(id)
+            } catch (error) {
+                console.error('Error del servidor')
+                return res.redirect('/principal?error=Error obteniendo datos.')
+            }
 
-        } catch (error) {
-            console.error('Error del servidor')
-            return res.redirect('/factura/vista/inicio?mensaje=Error obteniendo datos.')
-        }
+            const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+            const esProductor = session.roles.some((rol) => rol == 'productor')
+            const esCliente = session.roles.some((rol) => rol == 'cliente')
 
-        if (facturaEncontrado && detalleFacturaEncontrado) {
-            console.log(facturaEncontrado)
-            console.log("DETALLE FACTURA:" + detalleFacturaEncontrado)
-            return res.render(
-                'factura/editar',
-                {
-                    error: parametrosConsulta.error,
-                    factura: facturaEncontrado,
-                    orden: detalleFacturaEncontrado,
-                }
-            )
+            if (facturaEncontrada) {
+                return res.render(
+                    'factura/editar',
+                    {
+                        error: parametrosConsulta.error,
+                        factura: facturaEncontrada[0],
+                        rol: parametrosRuta.rol,
+                        id: session.usuarioId,
+                        esAdministrador:esAdministrador,
+                        esProductor: esProductor,
+                        esCliente: esCliente,
+                    }
+                )
+            } else {
+                return res.redirect('/principal?error=No hay suficientes datos para realizar esta acción. Inténtelo más tarde')
+            }
+
         } else {
-            return res.redirect('/factura/vista/inicio?mensaje=No hay suficientes datos para realizar esta acción. Inténtelo más tarde')
+            return res.redirect('/login')
         }
     }
 
 
-    @Post('editarDesdeVista/:id')
+    @Get('editarDesdeVista/:idFactura')
     async editarDesdeVista(
         @Param() parametrosRuta,
         @Body() paramBody,
-        @Res() res
-    ) {
-
-        console.log('LLEGA:' + paramBody)
-        const facturaValidada = new FacturaUpdateDto()
-        facturaValidada.id = Number(parametrosRuta.id)
-        facturaValidada.cumplido = paramBody.cumplido
-
-        const errores: ValidationError[] = await validate(facturaValidada)
-        if (errores.length > 0) {
-            console.error('Errores:', errores);
-            const error = 'Error en el formato de los datos'
-            return res.redirect('/factura/vista/inicio?mensaje=' + error)
-        } else {
-
-            const facturaEditado = {
-                facturaId: Number(parametrosRuta.id),
-                cumplido: paramBody.cumplido,
-            } as FacturaEntity
-
-            try {
-                await this._facturaService.editarUno(facturaEditado)
-                return res.redirect('/factura/vista/inicio?mensaje= Factura editada correctamente') // en caso de que all esté OK se envía al inicio
-            } catch (e) {
-                console.error(e)
-                const errorCreacion = 'Error editando Factura'
-                return res.redirect('/factura/vista/inicio?mensaje=' + errorCreacion)
-            }
-        }
-    }
-
-
-    @Post('eliminarDesdeVista/:id') // ESTA NO SE DEBE IMPLEMENTAR YA QUE NO SE PUEDE ELIMINAR UNA FACTURA PERO SE LA HIZO IGUALMENTE
-    async eliminarDesdeVista(
-        @Param() paramRuta,
         @Res() res,
+        @Session() session,
     ) {
-        try {
-            await this._facturaService.eliminarUno(Number(paramRuta.id))
-            return res.redirect('/factura/vista/inicio?mensaje= Factura Eliminada')
-        } catch (error) {
-            console.error(error)
-            return res.redirect('/factura/vista/inicio?error=Error eliminando  Factura')
+        if (session.usuarioId) {
+            const cumplido = 'Si'
+            const facturaValidada = new FacturaUpdateDto()
+            facturaValidada.id = Number(parametrosRuta.idFactura)
+            facturaValidada.cumplido = cumplido
+
+            const errores: ValidationError[] = await validate(facturaValidada)
+            if (errores.length > 0) {
+                const error = 'Error al marcar la orden como cumplida.'
+                return res.redirect('/principal?error=' + error)
+            } else {
+                const facturaEditado = {
+                    facturaId: Number(parametrosRuta.idFactura),
+                    cumplido: cumplido,
+                } as FacturaEntity
+
+                try {
+                    await this._facturaService.editarUno(facturaEditado)
+                    return res.redirect('/principal?exito= Se orden ha sido marcada como cumplida correctamente.')
+                } catch (e) {
+                    console.error(e)
+                    const error = 'Error al marcar la orden como cumplida.'
+                    return res.redirect('/principal?error=' + error)
+                }
+            }
+        } else {
+            return res.redirect('/login')
         }
     }
+
 
 }

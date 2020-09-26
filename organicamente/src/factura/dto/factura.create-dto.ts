@@ -25,11 +25,11 @@ export class FacturaCreateDto{
 
   /*  @IsNotEmpty()
     //@IsDateString()
-    fecha:string */
+    fecha:string
 
     @IsNotEmpty()
     @IsNumberString()
-    usuarioId:string
+    usuarioId:string */
 
     @IsNotEmpty()
     @MaxLength(5)

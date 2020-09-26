@@ -19,7 +19,8 @@
 <body>
 
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
-<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
 
 <a href="/usuario-rol/vista/crear">
     <button>
@@ -40,7 +41,7 @@
             <td><%= objeto.rol.nombre %></td>
             <td>
                 <button>Ver</button>
-                <form action="/usuario-rol/eliminarDesdeVista/<%= objeto.usuarioRolId %>" method="post">
+                <f<%- include('../compartido/menu/menu-component') %>orm action="/usuario-rol/eliminarDesdeVista/<%= objeto.usuarioRolId %>" method="post">
                     <button>Eliminar</button>
                 </form>
             </td>

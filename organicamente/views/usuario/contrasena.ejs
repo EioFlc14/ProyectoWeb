@@ -1,0 +1,114 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+</head>
+
+<body>
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
+
+
+<div class="form-row">
+
+    <div class="col-md-11 ml-auto  mr-auto ">
+
+
+        <form action="/usuario/cambiarContrasenaDesdeVista/<%=usuarioId%>"
+              method="post">
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mr-auto ml-auto ">
+                    <br>
+                    <h1><span class="badge badge-warning"> Cambio de Contraseña</span></h1>
+                    <br>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mr-auto ml-auto">
+                    <span class="badge badge-pill badge-warning">Contraseña actual (*):</span>
+                    <input id="actual"
+                           class="form-control"
+                           type="password"
+                           name="actual"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mr-auto ml-auto">
+                    <span class="badge badge-pill badge-warning">Contraseña nueva (*):</span>
+                    <input id="nueva"
+                           class="form-control"
+                           type="password"
+                           name="nueva"
+                           required>
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6 mr-auto ml-auto">
+                    <span class="badge badge-pill badge-warning">Confirmación de contraseña nueva (*):</span>
+                    <input id="confirmacionNueva"
+                           class="form-control"
+                           type="password"
+                           name="confirmacionNueva"
+                           required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <br>
+                <div class="form-group col-md-6 mr-auto ml-auto">
+                    <br>
+                    <button type="submit"
+                            class="btn btn-warning btn-lg btn-block">Cambiar Contraseña
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% if(typeof error != 'undefined'){ %>
+    <br>
+    <div class="ml-0 mr-0">
+        <div class="form-group col-lg-12 mx-auto mb-0">
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+
+
+
+
+

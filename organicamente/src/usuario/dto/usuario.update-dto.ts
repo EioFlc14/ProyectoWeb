@@ -26,6 +26,15 @@ export class UsuarioUpdateDto{
     apellido?:string
 
     @IsNotEmpty()
+    @IsNumberString()
+    @MaxLength(20)
+    telefono: string
+
+    @IsNotEmpty()
+    @MaxLength(200)
+    direccion: string
+
+/*    @IsNotEmpty()
     @MaxLength(50)
     @MinLength(8)
     @IsAlphanumeric()
@@ -41,18 +50,9 @@ export class UsuarioUpdateDto{
     email: string
 
     @IsNotEmpty()
-    @IsNumberString()
-    @MaxLength(20)
-    telefono: string
-
-    @IsNotEmpty()
-    @MaxLength(200)
-    direccion: string
-
-    @IsNotEmpty()
     @MaxLength(50)
     @IsNumberString()
-    identificacion: string
+    identificacion: string */
 
 
 

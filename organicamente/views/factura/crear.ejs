@@ -15,23 +15,25 @@
         function cambiarTotal() {
             document.querySelector("#cantidad")
                 .addEventListener("blur", function () {
-                    const total = Number(document.getElementById("precio").value) * Number(document.getElementById("cantidad").value)
-                    document.getElementById("total").value = total.toFixed(2);
+                    var cantidad = Number(document.getElementById("cantidad").value)
+                    var result = (cantidad - Math.floor(cantidad)) !== 0;
+                    if(result){
+                        document.getElementById("total").value = 0.0;
+                    } else {
+                        const total = Number(document.getElementById("precio").value) * cantidad;
+                        document.getElementById("total").value = total.toFixed(2);
+                    }
                 });
         }
     </script>
-
 
 </head>
 
 <body>
 
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
-<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
 
-<% if(typeof error != 'undefined'){ %>
-    <p> MENSAJE: <%= error %></p>
-<% } %>
 <br>
 <div class="form-row">
 
@@ -72,26 +74,41 @@
             <span class="badge badge-pill badge-success">Nombre del producto:</span>
             <input type="text" class="form-control" value="<%= producto.producto.nombre %>" disabled>
         </div>
-        <form action="/factura/crearDesdeVista?usuarioProducto=<%=producto.usuarioProductoId%>" method="POST">
+        <form action="/factura/crearDesdeVista?usuarioProducto=<%= producto.usuarioProductoId %>" method="POST">
             <div class="form-row">
                 <div class="form-group col-md-4">
                     <span class="badge badge-pill badge-success">Precio ($):</span>
-                    <input id="precio" type="text" class="form-control" value="<%= producto.precio %>"  name="precio" readonly>
+                    <input id="precio" type="text" class="form-control" value="<%= producto.precio %>" name="precio"
+                           readonly>
                 </div>
                 <div class="form-group col-md-4">
                     <span class="badge badge-pill badge-success">Cantidad:</span>
-                    <input id="cantidad" type="number" class="form-control" name="cantidad" onchange="cambiarTotal()" required>
+                    <input id="cantidad" type="number" class="form-control" name="cantidad" onchange="cambiarTotal()"
+                           required>
                 </div>
                 <div class="form-group col-md-4">
                     <span class="badge badge-pill badge-success">Total ($):</span>
-                    <input id="total" type="text" name="total"  class="form-control" value=0.0 readonly >
+                    <input id="total" type="text" name="total" class="form-control" value=0.0 readonly>
                 </div>
             </div>
             <br>
             <br>
             <button type="submit" class="btn btn-success btn-lg btn-block">COMPRAR</button>
         </form>
+
+        <% if(typeof error != 'undefined'){ %>
+            <br>
+            <div class="ml-0 mr-0">
+                <div class="form-group col-lg-12 mx-auto mb-0">
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
     </div>
+
 
 </div>
 

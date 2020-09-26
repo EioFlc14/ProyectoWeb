@@ -9,64 +9,117 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
-    <title>Organicamente - Login</title>
+    <title>Organicamente</title>
 
 </head>
 
 <body>
 
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
-<%- include('../compartido/menu/menu-component') %>
-
-<a href="/usuario/vista/crear">
-    <button>
-        CREAR
-    </button>
-</a>
-
-<% if(typeof parametrosConsulta != 'undefined') {%>
-    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
-<% }%>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
 
 
-<table>
-    <tr>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Username</th>
-        <th>Password</th>
-        <th>Email</th>
-        <th>Telefono</th>
-        <th>Direccion</th>
-        <th>Identificacion</th>
-    </tr>
+<br>
+<br>
+<!-- BUSQUEDA-->
+<div class="col-md-12 col-lg-12 ml-auto">
+    <div class="row">
+        <div class=" col-md-12 col-lg-6">
+            <form action="/usuario/vista/inicio" method="get">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-white px-4 border-md border-right-0">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+                            <path fill-rule="evenodd"
+                                  d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+                        </svg>
+                    </span>
 
-    <% arregloUsuarios.forEach((objeto) => { %>
+                    <input id="busqueda" type="text" name="busqueda" placeholder="Buscar"
+                           class="form-control bg-white border-left-0 border-md">
+                    <button type="submit" class="btn btn-success">BUSCAR</button>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="input-group col-lg-6 mb-4 ">
+            <a href="/usuario/vista/crear" class="btn btn-success btn-lg btn-block active ml-auto"
+               role="button"
+               aria-pressed="true">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill"
+                     fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+                Nuevo Usuario
+            </a>
+        </div>
+    </div>
+</div>
+
+<% if(typeof error != 'undefined'){ %>
+    <br>
+    <div class="ml-0 mr-0">
+        <div class="form-group col-lg-12 mx-auto mb-0">
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<br>
+
+<% if(arregloUsuarios.length > 0 ) { %>
+    <table class="table col-md-11 ml-auto mr-auto">
+        <br>
+        <thead class="btn-success">
         <tr>
-            <td><%= objeto.nombre %></td>
-            <td><%= objeto.apellido %></td>
-            <td><%= objeto.username %></td>
-            <td><%= objeto.password %></td>
-            <td><%= objeto.email %></td>
-            <td><%= objeto.telefono %></td>
-            <td><%= objeto.direccion %></td>
-            <td><%= objeto.identificacion %></td>
-            <td>
-                <button>Ver</button>
-
-                <a href="/usuario/vista/editar/<%=objeto.usuarioId%>">
-                    <button>Editar</button>
-                </a>
-
-                <form action="/usuario/eliminarDesdeVista/<%= objeto.usuarioId %>" method="post">
-                    <button>Eliminar</button>
-                </form>
-            </td>
+            <th scope="col">Identificación</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Nombre de Usuario</th>
+            <th scope="col">Email</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Acciones</th>
         </tr>
-    <% }) %>
-
-</table>
-
+        </thead>
+        <tbody class="mr-auto">
+        <% arregloUsuarios.forEach((objeto) => { %>
+            <tr>
+                <th scope="row"><%= objeto.identificacion %></th>
+                <td><%= objeto.apellido + ' ' + objeto.nombre %></td>
+                <td><%= objeto.username %></td>
+                <td><%= objeto.email %></td>
+                <td><%= objeto.telefono %></td>
+                <td>
+                    <div class="form-row mb-0">
+                        <div class="form-group col-md-6 mb-0">
+                            <a href="/usuario/vista/editar/<%= objeto.usuarioId %>">
+                                <button class="btn btn-primary btn-block" type="button" aria-expanded="false"
+                                        aria-controls="collapseExample">
+                                    Editar
+                                </button>
+                            </a>
+                        </div>
+                        <div class="form-group col-md-6 mb-0">
+                            <a href="/usuario/vista/cambiarContrasena/<%=objeto.usuarioId%>">
+                                <button class="btn btn-warning btn-block" type="button" aria-expanded="false"
+                                        aria-controls="collapseExample">
+                                    Cambiar Contraseña
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+<% } %>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

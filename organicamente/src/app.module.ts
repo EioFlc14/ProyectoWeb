@@ -6,7 +6,7 @@ import {FacturaModule} from "./factura/factura.module";
 import {ProductoModule} from "./producto/producto.module";
 import {RolModule} from "./rol/rol.module";
 import {UnidadModule} from "./unidad/unidad.module";
-import {UsuarioModule} from "./usuario/usuario,module";
+import {UsuarioModule} from "./usuario/usuario.module";
 import {UsuarioProductoModule} from "./usuario-producto/usuario-producto.module";
 import {UsuarioRolModule} from "./usuario-rol/usuario-rol.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
@@ -19,6 +19,8 @@ import {UsuarioEntity} from "./usuario/usuario.entity";
 import {UsuarioProductoEntity} from "./usuario-producto/usuario-producto.entity";
 import {UsuarioRolEntity} from "./usuario-rol/usuario-rol.entity";
 import {UsuarioService} from "./usuario/usuario.service";
+import {RolService} from "./rol/rol.service";
+import {UsuarioRolService} from "./usuario-rol/usuario-rol.service";
 
 @Module({
   imports: [
@@ -52,9 +54,9 @@ import {UsuarioService} from "./usuario/usuario.service";
         dropSchema: false
 
       }),
-      TypeOrmModule.forFeature([UsuarioEntity] ,'default')
+      TypeOrmModule.forFeature([UsuarioEntity, RolEntity, UsuarioRolEntity] ,'default')
   ],
   controllers: [AppController],
-  providers: [AppService, UsuarioService],
+  providers: [AppService, UsuarioService,RolService,UsuarioRolService],
 })
 export class AppModule {}

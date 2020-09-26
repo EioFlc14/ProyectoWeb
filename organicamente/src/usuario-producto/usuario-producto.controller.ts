@@ -2,13 +2,12 @@ import {
     Body,
     Controller,
     Get,
-    InternalServerErrorException,
-    NotFoundException,
     Param,
     Post,
     Query, Req,
-    Res, UploadedFile, UseInterceptors
+    Res, Session, UploadedFile, UseInterceptors
 } from "@nestjs/common";
+
 import {validate, ValidationError} from "class-validator";
 import {UsuarioProductoService} from "./usuario-producto.service";
 import {UsuarioProductoCreateDto} from "./dto/usuario-producto.create-dto";
@@ -34,89 +33,118 @@ export class UsuarioProductoController {
     }
 
 
-    @Get('vista/inicio/:rol/:id') // poner la direccion
+    @Get('vista/inicio/:rol')
     async obtenerUsuarioProductos(
         @Param() parametrosRuta,
         @Query() parametrosConsulta,
-        @Res() res
+        @Res() res,
+        @Session() session,
     ) {
 
-        console.log("AVER: "+ parametrosConsulta.busqueda)
-        let resultadoEncontrado = []
-        try {
-            if(parametrosRuta.rol === 'cliente' || parametrosRuta.rol === 'admin'){
-                resultadoEncontrado = await this._usuarioProductoService.busquedaProductoCamposCliente(parametrosConsulta.busqueda)
-            } else if(parametrosRuta.rol === 'productor' ){
-                const id = Number(parametrosRuta.id)
-                resultadoEncontrado = await this._usuarioProductoService.busquedaProductoCamposProductor(parametrosConsulta.busqueda, id)
+        if (session.usuarioId) {
+            let resultadoEncontrado = []
+            try {
+                if (parametrosConsulta.busqueda == undefined) {
+                    parametrosConsulta.busqueda = ''
+                }
+
+                if (parametrosRuta.rol === 'cliente' || parametrosRuta.rol === 'admin') {
+                    resultadoEncontrado = await this._usuarioProductoService.busquedaProductoCamposClienteAdmin(parametrosConsulta.busqueda)
+                } else if (parametrosRuta.rol === 'productor') {
+                    const id = session.usuarioId
+                    resultadoEncontrado = await this._usuarioProductoService.busquedaProductoCamposProductor(parametrosConsulta.busqueda, id)
+                }
+
+                const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+                const esProductor = session.roles.some((rol) => rol == 'productor')
+                const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+
+                return res.render('usuario-producto/inicio', {
+                    arregloUsuarioProductos: resultadoEncontrado,
+                    rol: parametrosRuta.rol,
+                    id: session.usuarioId,
+                    esAdministrador:esAdministrador,
+                    esProductor: esProductor,
+                    esCliente: esCliente,
+                })
+
+            } catch (error) {
+                console.error(error)
+
+                const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+                const esProductor = session.roles.some((rol) => rol == 'productor')
+                const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+
+                return res.render('usuario-producto/inicio', {
+                    arregloUsuarioProductos: resultadoEncontrado,
+                    rol: parametrosRuta.rol,
+                    id: session.usuarioId,
+                    esAdministrador:esAdministrador,
+                    esProductor: esProductor,
+                    esCliente: esCliente,
+                })
             }
-
-            return res.render('usuario-producto/inicio', {
-                arregloUsuarioProductos: resultadoEncontrado,
-                rol: parametrosRuta.rol,
-            })
-
-        } catch (error) {
-            console.error(error)
-            return res.render('usuario-producto/inicio', {
-                arregloUsuarioProductos: resultadoEncontrado,
-                rol: parametrosRuta.rol,
-            })
+        } else {
+            return res.redirect('/login')
         }
 
-/*        if (resultadoEncontrado) {
-
-            console.log(resultadoEncontrado)
-            return res.render('usuario-producto/inicio', {
-                arregloUsuarioProductos: resultadoEncontrado,
-                rol: parametrosRuta.rol,
-            })
-        } else {
-            throw new NotFoundException('NO se encontraron productos del usuario')
-        }*/
     }
-
 
 
     @Get('vista/crear')
     async crearUsuarioProductoVista(
         @Query() parametrosConsulta,
-        @Res() res
+        @Res() res,
+        @Session() session,
     ) {
+        if (session.usuarioId) {
+            let arregloProductos
+            let arregloUnidades
 
-        let arregloProductos
-        let arregloUnidades
+            try {
+                arregloProductos = await this._productoService.buscarTodos()
+                arregloUnidades = await this._unidadService.buscarTodos()
+            } catch (e) {
+                const error = 'Error obteniendo datos.'
+                return res.redirect('/principal?error=' + error)
+            }
 
-        try {
-            arregloProductos = await this._productoService.buscarTodos()
-            arregloUnidades = await this._unidadService.buscarTodos()
-        } catch (error) {
-            throw new NotFoundException('Error obteniendo datos.')
-        }
+            if (arregloUnidades && arregloProductos) {
 
-        if (arregloUnidades && arregloProductos) {
-            console.log("ARREGLO PRODUCTOS:" + arregloProductos)
-            console.log("ARREGLO UNIDADES:" + arregloUnidades)
-            return res.render('usuario-producto/crear',
-                {
-                    error: parametrosConsulta.error,
-                    producto: parametrosConsulta.producto,
-                    stock: parametrosConsulta.stock,
-                    imagen: parametrosConsulta.imagen,
-                    precio: parametrosConsulta.precio,
-                    usuario: parametrosConsulta.usuario,
-                    unidad: parametrosConsulta.unidad,
-                    arregloUnidades: arregloUnidades,
-                    arregloProductos: arregloProductos
-                })
+                const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+                const esProductor = session.roles.some((rol) => rol == 'productor')
+                const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+                return res.render('usuario-producto/crear',
+                    {
+                        error: parametrosConsulta.error,
+                        producto: parametrosConsulta.producto,
+                        stock: parametrosConsulta.stock,
+                        imagen: parametrosConsulta.imagen,
+                        precio: parametrosConsulta.precio,
+                        usuario: parametrosConsulta.usuario,
+                        unidad: parametrosConsulta.unidad,
+                        arregloUnidades: arregloUnidades,
+                        arregloProductos: arregloProductos,
+                        id: session.usuarioId,
+                        esAdministrador:esAdministrador,
+                        esProductor: esProductor,
+                        esCliente: esCliente,
+                    })
+            } else {
+                const error = 'No hay suficientes datos para esta acción. Inténtelo más tarde.'
+                return res.redirect('/principal?error=' + error)
+            }
+
         } else {
-            throw new NotFoundException('No hay suficientes datos para esta acción. Inténtelo más tarde.')
+            return res.redirect('/login')
         }
-
 
     }
 
-    //@Post()
+
     @Post('crearDesdeVista')
     @UseInterceptors(
         FileInterceptor('imagen', {
@@ -130,96 +158,117 @@ export class UsuarioProductoController {
         @Body() paramBody,
         @Res() res,
         @Req() req,
-        @UploadedFile() file
+        @UploadedFile() file,
+        @Session() session,
     ) {
-        if (req.fileValidationError) {
-            return res.redirect('/usuario-producto/vista/crear?error=' + req.fileValidationError)
-        }
+        if (session.usuarioId) {
+            if (req.fileValidationError) {
+                return res.redirect('/usuario-producto/vista/crear?error=' + req.fileValidationError)
+            }
 
-        let respuestaCreacionUsuario
-        const usuarioProductoValidado = new UsuarioProductoCreateDto()
-        usuarioProductoValidado.productoProductoId = paramBody.producto
-        usuarioProductoValidado.stock = paramBody.stock
-        usuarioProductoValidado.precio = paramBody.precio
-        if (file == undefined) {
-            usuarioProductoValidado.imagen = defaultImagen
-        } else {
-            usuarioProductoValidado.imagen = file.path.split('/')[2]
-        }
-        usuarioProductoValidado.unidadUnidadId = paramBody.unidad
-        usuarioProductoValidado.usuarioUsuarioId = paramBody.usuario
+            let respuestaCreacionUsuario
+            const usuarioProductoValidado = new UsuarioProductoCreateDto()
+            usuarioProductoValidado.productoProductoId = paramBody.producto
+            usuarioProductoValidado.stock = paramBody.stock
+            usuarioProductoValidado.precio = paramBody.precio
+            if (file == undefined) {
+                usuarioProductoValidado.imagen = defaultImagen
+            } else {
+                usuarioProductoValidado.imagen = file.path.split('/')[2]
+            }
+            usuarioProductoValidado.unidadUnidadId = paramBody.unidad
 
-        const errores: ValidationError[] = await validate(usuarioProductoValidado)
-        const texto = `&producto=${paramBody.producto}&stock=${paramBody.stock}&precio=${paramBody.precio}&imagen=${paramBody.imagen}&unidad=${paramBody.unidad}&usuario=${paramBody.usuario}`
-        if (errores.length > 0) {
-            console.error('Errores:', errores);
-            const error = 'Error en el formato de los datos'
-            return res.redirect('/usuario-producto/vista/crear?error=' + error + texto)
-        } else {
-            try {
-                paramBody.stock = Number(paramBody.stock)
-                paramBody.precio = Number(paramBody.precio)
-                paramBody.producto = Number(paramBody.producto)
-                paramBody.unidad = Number(paramBody.unidad)
-                paramBody.usuario = Number(paramBody.usuario)
-                if (file == undefined) {
-                    paramBody.imagen = defaultImagen
-                } else {
-                    paramBody.imagen = file.path.split('/')[2]
+            const errores: ValidationError[] = await validate(usuarioProductoValidado)
+            const texto = `&producto=${paramBody.producto}&stock=${paramBody.stock}&precio=${paramBody.precio}&imagen=${paramBody.imagen}&unidad=${paramBody.unidad}&usuario=${paramBody.usuario}`
+            if (errores.length > 0) {
+                console.log(errores)
+                const error = 'Error en el formato de los datos'
+                return res.redirect('/usuario-producto/vista/crear?error=' + error + texto)
+            } else {
+                try {
+                    paramBody.stock = Number(paramBody.stock)
+                    paramBody.precio = Number(paramBody.precio)
+                    paramBody.producto = Number(paramBody.producto)
+                    paramBody.unidad = Number(paramBody.unidad)
+                    paramBody.usuario = session.usuarioId
+
+                    if (paramBody.precio > 0) {
+                        if (file == undefined) {
+                            paramBody.imagen = defaultImagen
+                        } else {
+                            paramBody.imagen = file.path.split('/')[2]
+                        }
+
+                        let usuarioProducto = paramBody as UsuarioProductoEntity
+                        usuarioProducto = JSON.parse(JSON.stringify(usuarioProducto));
+                        respuestaCreacionUsuario = await this._usuarioProductoService.crearUno(usuarioProducto)
+                    } else {
+                        const errorCreacion = 'El precio debe ser mayor a 0.'
+                        return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
+                    }
+
+                } catch (e) {
+                    console.error(e)
+                    const errorCreacion = 'Error al crear el producto.'
+                    return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
                 }
 
-                console.log(paramBody.image)
-
-                let usuarioProducto = paramBody as UsuarioProductoEntity
-                usuarioProducto = JSON.parse(JSON.stringify(usuarioProducto));
-
-                console.log(usuarioProducto)
-                respuestaCreacionUsuario = await this._usuarioProductoService.crearUno(usuarioProducto)
-            } catch (e) {
-                console.error(e)
-                const errorCreacion = 'Error al crear el Usuario'
-                return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
+                if (respuestaCreacionUsuario) {
+                    return res.redirect('/usuario-producto/vista/inicio/productor') // en caso de que all esté OK se envía al inicio
+                } else {
+                    const errorCreacion = 'Error al crear el producto'
+                    return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
+                }
             }
-
-            if (respuestaCreacionUsuario) {
-                return res.redirect('/usuario-producto/vista/inicio') // en caso de que all esté OK se envía al inicio
-            } else {
-                const errorCreacion = 'Error al crear el Usuario'
-                return res.redirect('/usuario-producto/vista/crear?error=' + errorCreacion + texto)
-            }
+        } else {
+            return res.redirect('/login')
         }
     }
 
 
-    @Get('vista/editar/:id') // Controlador
+    @Get('vista/editar/:idUsuarioProducto')
     async editarUsuarioProductoVista(
         @Query() parametrosConsulta,
         @Res() res,
-        @Param() parametrosRuta
+        @Param() parametrosRuta,
+        @Session() session,
     ) {
-        const id = Number(parametrosRuta.id)
-        let usuarioProductoEncontrado
-        let arregloUnidades
+        if (session.usuarioId) {
+            const id = Number(parametrosRuta.idUsuarioProducto)
+            let usuarioProductoEncontrado
+            let arregloUnidades
 
-        try {
-            usuarioProductoEncontrado = await this._usuarioProductoService.buscarUno(id)
-            arregloUnidades = await this._unidadService.buscarTodos()
-        } catch (error) {
-            console.error('Error del servidor')
-            return res.redirect('/usuario-producto/vista/inicio?mensaje=Error obteniendo datos')
-        }
+            try {
+                usuarioProductoEncontrado = await this._usuarioProductoService.buscarUno(id)
+                arregloUnidades = await this._unidadService.buscarTodos()
+            } catch (error) {
+                console.error('Error del servidor')
+                return res.redirect('/usuario-producto/vista/inicio?mensaje=Error obteniendo datos')
+            }
 
-        if (usuarioProductoEncontrado) {
-            return res.render(
-                'usuario-producto/crear',
-                {
-                    error: parametrosConsulta.error,
-                    usuarioProducto: usuarioProductoEncontrado,
-                    arregloUnidades: arregloUnidades
-                }
-            )
+            if (usuarioProductoEncontrado) {
+
+                const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+                const esProductor = session.roles.some((rol) => rol == 'productor')
+                const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+                return res.render(
+                    'usuario-producto/crear',
+                    {
+                        error: parametrosConsulta.error,
+                        usuarioProducto: usuarioProductoEncontrado,
+                        arregloUnidades: arregloUnidades,
+                        id: session.usuarioId,
+                        esAdministrador:esAdministrador,
+                        esProductor: esProductor,
+                        esCliente: esCliente,
+                    }
+                )
+            } else {
+                return res.redirect('/usuario-producto/vista/inicio?mensaje=Usuario Producto no encontrado')
+            }
         } else {
-            return res.redirect('/usuario-producto/vista/inicio?mensaje=Usuario Producto no encontrado')
+            return res.redirect('/login')
         }
 
     }
@@ -238,51 +287,54 @@ export class UsuarioProductoController {
         @Param() parametrosRuta,
         @Body() paramBody,
         @Res() res,
-        @UploadedFile() file
+        @UploadedFile() file,
+        @Session() session,
     ) {
 
-        const usuarioProductoValidado = new UsuarioProductoUpdateDto()
-        usuarioProductoValidado.id = Number(parametrosRuta.id)
-        usuarioProductoValidado.stock = paramBody.stock
-        usuarioProductoValidado.precio = paramBody.precio
-        if (file == undefined) {
-            usuarioProductoValidado.imagen = defaultImagen
-        } else {
-            usuarioProductoValidado.imagen = file.path.split('/')[2]
-        }
-
-        const errores: ValidationError[] = await validate(usuarioProductoValidado)
-        if (errores.length > 0) {
-            console.error('Errores:', errores);
-            return res.redirect('/principal?error= Error al editar el producto.')
-        } else {
-
+        if (session.usuarioId) {
+            const usuarioProductoValidado = new UsuarioProductoUpdateDto()
+            usuarioProductoValidado.id = Number(parametrosRuta.id)
+            usuarioProductoValidado.stock = paramBody.stock
+            usuarioProductoValidado.precio = paramBody.precio
             if (file == undefined) {
-                paramBody.imagen = defaultImagen
+                usuarioProductoValidado.imagen = defaultImagen
             } else {
-                paramBody.imagen = file.path.split('/')[2]
+                usuarioProductoValidado.imagen = file.path.split('/')[2]
             }
 
-            const usuarioProducto = {
-                usuarioProductoId: Number(parametrosRuta.id),
-                stock: Number(paramBody.stock),
-                precio: Number(paramBody.precio),
-                imagen: paramBody.imagen,
-            } as UsuarioProductoEntity
+            const errores: ValidationError[] = await validate(usuarioProductoValidado)
+            if (errores.length > 0) {
+                return res.redirect('/principal?error= Error al editar el producto.')
+            } else {
 
-            try {
-                await this._usuarioProductoService.editarUno(usuarioProducto)
-                return res.redirect('/principal?exito= Producto editado correctamente') // en caso de que all esté OK se envía al inicio
-            } catch (e) {
-                console.error(e)
-                const errorCreacion = 'Error al editar el producto.'
-                return res.redirect('/principal?error=' + errorCreacion)
+                if (file == undefined) {
+                    paramBody.imagen = defaultImagen
+                } else {
+                    paramBody.imagen = file.path.split('/')[2]
+                }
+
+                const usuarioProducto = {
+                    usuarioProductoId: Number(parametrosRuta.id),
+                    stock: Number(paramBody.stock),
+                    precio: Number(paramBody.precio),
+                    imagen: paramBody.imagen,
+                } as UsuarioProductoEntity
+
+                try {
+                    await this._usuarioProductoService.editarUno(usuarioProducto)
+                    return res.redirect('/principal?exito= Producto editado correctamente')
+                } catch (e) {
+                    console.error(e)
+                    const errorCreacion = 'Error al editar el producto.'
+                    return res.redirect('/principal?error=' + errorCreacion)
+                }
             }
+        } else {
+            return res.redirect('/login')
         }
     }
 
-
-    @Post('eliminarDesdeVista/:id')
+/*    @Post('eliminarDesdeVista/:id')
     async eliminarDesdeVista(
         @Param() paramRuta,
         @Res() res,
@@ -294,7 +346,7 @@ export class UsuarioProductoController {
             console.error(error)
             return res.redirect('/usuario-producto/vista/inicio?error=Error eliminando usuario producto ')
         }
-    }
+    }*/
 
 
 }

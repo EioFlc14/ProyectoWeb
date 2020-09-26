@@ -1,6 +1,3 @@
-
-
-
 <!doctype html>
 
 <html lang="es">
@@ -12,47 +9,78 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
-    <title>Organicamente - Login</title>
+    <title>Organicamente</title>
+
+    <script type="application/javascript">
+
+        function desplegar(){
+            document.getElementById("nuevaUnidadBoton").click();
+        }
+
+    </script>
 
 </head>
 
 <body>
 
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
-<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
 
-<a href="/unidad/vista/crear">
-    <button>
-        CREAR
-    </button>
-</a>
 
-<% if(typeof parametrosConsulta != 'undefined') {%>
-    <p> MENSAJE: <%= parametrosConsulta.mensaje%></p>
-<% }%>
+<br>
+<br>
+<div class="form-row" >
+    <div class="col-md-6 col-lg-4 ml-5">
+        <ul class="list-group">
+            <li class="list-group-item active  ">Unidades</li>
+            <% arregloUnidades.forEach((objeto) => { %>
+                <li class="list-group-item"><%= objeto.nombre %></li>
+            <% }) %>
+        </ul>
+    </div>
+    <div class="col-md-6 col-lg-4 ml-auto mr-auto ">
+        <p>
+            <button class="btn btn-success btn-block" type="button" data-toggle="collapse" data-target="#nuevaUnidad"
+                    aria-expanded="false" aria-controls="collapseExample" >
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle-fill"
+                     fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd"
+                          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+                NUEVA UNIDAD
+            </button>
+        </p>
+        <div class="collapse" id="nuevaUnidad">
+            <br>
+            <br>
+            <form action="/unidad/crearDesdeVista" method="post">
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <input class="form-control" name="nombre" required placeholder="Ingrese el nombre de la nueva unidad">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">CREAR</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-<table>
-    <tr>
-        <th>Nombre</th>
-        <th>Acciones</th>
-    </tr>
+        <% if(typeof  error != 'undefined'){ %>
+            <br>
+            <div class="ml-0 mr-0">
+                <div class="form-group col-lg-12 mx-auto mb-0">
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
 
-    <% arregloUnidades.forEach((objeto) => { %>
-        <tr>
-            <td><%= objeto.nombre %></td>
-            <td>
-                <button>Ver</button>
-                <a href="/unidad/vista/editar/<%=objeto.unidadId%>">
-                    <button>Editar</button>
-                </a>
-                <form action="/unidad/eliminarDesdeVista/<%= objeto.unidadId %>" method="post">
-                    <button>Eliminar</button>
-                </form>
-            </td>
-        </tr>
-    <% }) %>
+    </div>
+</div>
 
-</table>
+
 
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

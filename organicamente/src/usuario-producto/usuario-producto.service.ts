@@ -43,7 +43,7 @@ export class UsuarioProductoService {
         return this.repositorio.find(busquedaEjemplo)
     }
 
-    async busquedaProductoCamposCliente(busqueda: string) {
+    async busquedaProductoCamposClienteAdmin(busqueda: string) {
         return await getManager('default')
             .query(`select us.nombre as 'nombre', us.apellido as 'apellido', us.username as 'username',  up.stock as 'stock', 
                             up.precio as 'precio', u.nombre as 'unidad', p.nombre as 'producto', up.imagen as 'imagen', up.usuario_producto_id as 'usuarioProductoId', us.usuario_id as 'usuarioId' 

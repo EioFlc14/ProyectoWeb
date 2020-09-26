@@ -21,9 +21,6 @@ export class UsuarioProductoCreateDto{
     @IsNumberString()
     productoProductoId:string
 
-    @IsNotEmpty()
-    @IsNumberString()
-    usuarioUsuarioId:string
 
     @IsNotEmpty()
     @IsNumberString()

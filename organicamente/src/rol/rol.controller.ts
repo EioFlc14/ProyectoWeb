@@ -2,193 +2,111 @@ import {
     Body,
     Controller,
     Get,
-    InternalServerErrorException,
-    NotFoundException,
-    Param,
     Post,
     Query,
-    Res
+    Res, Session
 } from "@nestjs/common";
 
 import {validate, ValidationError} from "class-validator";
 import {RolService} from "./rol.service";
 import {RolCreateDto} from "./dto/rol.create-dto";
-import {RolUpdateDto} from "./dto/rol.update-dto";
-import {RolEntity} from "./rol.entity";
 
 @Controller('rol')
-export class RolController{
+export class RolController {
 
     constructor(
         private readonly _rolService: RolService
     ) {
     }
 
-    @Get('vista/inicio') // poner la direccion que corresponda
-    async obtenerRoles(
-        @Res() res
+    @Get('vista/inicio')
+    async obtenerUnidades(
+        @Query() paramConsulta,
+        @Res() res,
+        @Session() session,
     ) {
-        let resultadoEncontrado
-        try {
-            resultadoEncontrado = await this._rolService.buscarTodos()
-        } catch(error){
-            throw new InternalServerErrorException('Error encontrando roles')
-        }
+        if (session.usuarioId) {
+            let resultadoEncontrado
+            try {
+                resultadoEncontrado = await this._rolService.buscarTodos()
+            } catch (e) {
+                const error = 'Error al obtener roles.'
+                return res.redirect('/principal?error=' + error)
+            }
 
-        if(resultadoEncontrado){
-            console.log(resultadoEncontrado)
-            return res.render('rol/inicio', {arregloRoles: resultadoEncontrado}) // con esto mando resultadoEcontrado hasta usuario/inicio
+            const esAdministrador = session.roles.some((rol) => rol == 'administrador')
+            const esProductor = session.roles.some((rol) => rol == 'productor')
+            const esCliente = session.roles.some((rol) => rol == 'cliente')
+
+            if (resultadoEncontrado) {
+                return res.render('rol/inicio',
+                    {
+                        arregloRoles: resultadoEncontrado,
+                        error: paramConsulta.error,
+                        id: session.usuarioId,
+                        esAdministrador:esAdministrador,
+                        esProductor: esProductor,
+                        esCliente: esCliente,
+                    })
+            } else {
+                const error = 'No hay roles para mostrar.'
+                return res.redirect('/principal?error=' + error)
+            }
         } else {
-            throw new NotFoundException('NO se encontraron usuarios')
+            return res.redirect('/login')
         }
+
     }
 
-    @Get('vista/crear')
-    crearRolVista(
-        @Query() parametrosConsulta,
-        @Res() res
-    ){
-        return res.render('rol/crear',
-            {
-                error: parametrosConsulta.error,
-                nombre: parametrosConsulta.nombre,
-            })
-    }
 
-    //@Post()
     @Post('crearDesdeVista')
     async crearDesdeVista(
         @Body() paramBody,
         @Res() res,
-    ){
-        let respuestaCreacionRol
-        const rolCreado = new RolCreateDto()
-        rolCreado.nombre = paramBody.nombre
-
-
-        const errores: ValidationError[] = await validate(rolCreado)
-        const texto = `&nombre=${paramBody.nombre}`
-        if(errores.length > 0){
-            console.error('Errores:',errores);
-            const error = 'Error en el formato de los datos'
-            return res.redirect('/rol/vista/crear?error='+error+texto)
-        } else {
-
-            let error
-            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
-            if(re.test(paramBody.nombre)) {
-
-                try {
-                    respuestaCreacionRol = await this._rolService.crearUno(paramBody)
-                } catch (e) {
-                    console.error(e)
-                    error = 'Error al crear el rol'
-                    return res.redirect('/rol/vista/crear?error=' + error + texto)
-                }
-
-                if (respuestaCreacionRol) {
-                    return res.redirect('/rol/vista/inicio?mensaje=Rol creado exitosamente') // en caso de que all esté OK se envía al inicio
-                } else {
-                    error = 'Error al crear el Producto'
-                    return res.redirect('/rol/vista/crear?error=' + error + texto)
-                }
-            } else {
-                error = 'Caracteres no permitidos en el nombre'
-                return res.redirect('/rol/vista/crear?error='+error)
-            }
-
-        }
-
-    }
-
-
-    @Get('vista/editar/:id') // Controlador
-    async editarRolVista(
-        @Query() parametrosConsulta,
-        @Res() res,
-        @Param() parametrosRuta
+        @Session() session,
     ) {
-        const id = Number(parametrosRuta.id)
-        let rolEncontrado
+        if (session.usuarioId) {
+            let respuestaCreacionRol
+            const rolCreado = new RolCreateDto()
+            rolCreado.nombre = paramBody.nombre
 
-        try {
-            rolEncontrado = await this._rolService.buscarUno(id)
-        } catch (error) {
-            console.error('Error del servidor')
-            return res.redirect('/rol/vista/inicio?mensaje=Error buscando rol')
-        }
-
-        if (rolEncontrado){
-            return res.render(
-                'rol/crear',
-                {
-                    error: parametrosConsulta.error,
-                    rol: rolEncontrado
-                }
-            )
-        } else {
-            return res.redirect('/rol/vista/inicio?mensaje=Rol no encontrado')
-        }
-    }
-
-
-    @Post('editarDesdeVista/:id')
-    async editarDesdeVista(
-        @Param() parametrosRuta,
-        @Body() paramBody,
-        @Res() res
-    ){
-
-        const rolValidado = new RolUpdateDto()
-        rolValidado.id = Number(parametrosRuta.id)
-        rolValidado.nombre = paramBody.nombre
-
-        const errores: ValidationError[] = await validate(rolValidado)
-        if(errores.length > 0){
-            console.error('Errores:',errores);
-            return res.redirect('/rol/vista/inicio?mensaje= Error en el formato de los datos')
-        } else {
-
-            let error
-            const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
-            if(re.test(paramBody.nombre)) {
-                const rolEditado = {
-                    rolId: Number(parametrosRuta.id),
-                    nombre: paramBody.nombre,
-                } as RolEntity
-
-                try {
-                    await this._rolService.editarUno(rolEditado)
-                    return res.redirect('/rol/vista/inicio?mensaje= Usuario editado correctamente') // en caso de que all esté OK se envía al inicio
-                } catch (e) {
-                    console.error(e)
-                    error = 'Error editando Rol'
-                    return res.redirect('/rol/vista/inicio?mensaje=' + error)
-                }
+            const errores: ValidationError[] = await validate(rolCreado)
+            const texto = `&nombre=${paramBody.nombre}`
+            if (errores.length > 0) {
+                const error = 'Error en el formato de los datos'
+                return res.redirect('/rol/vista/inicio?error=' + error + texto)
             } else {
-                error = 'Caracteres no permitidos en el nombre'
-                return res.redirect('/rol/vista/crear?error='+error)
+
+                let error
+                const re = /^[\p{L}'][ \p{L}'-]*[\p{L}]$/u;
+                if (re.test(paramBody.nombre)) {
+
+                    try {
+                        respuestaCreacionRol = await this._rolService.crearUno(paramBody)
+                    } catch (e) {
+                        console.error(e)
+                        error = 'Error al crear el rol'
+                        return res.redirect('/principal?error=' + error)
+                    }
+
+                    if (respuestaCreacionRol) {
+                        const exito = 'Rol creado exitosamente.'
+                        return res.redirect('/principal?exito=' + exito)
+                    } else {
+                        error = 'Error al crear el rol'
+                        return res.redirect('/principal?error=' + error)
+                    }
+                } else {
+                    error = 'Caracteres no permitidos en el nombre'
+                    return res.redirect('/rol/vista/inicio?error=' + error + texto)
+                }
+
             }
 
+        } else {
+            return res.redirect('/login')
         }
 
-    }
-
-
-
-
-    @Post('eliminarDesdeVista/:id')
-    async eliminarDesdeVista(
-        @Param() paramRuta,
-        @Res() res,
-    ){
-        try{
-            await this._rolService.eliminarUno(Number(paramRuta.id))
-            return res.redirect('/rol/vista/inicio?mensaje= Rol Eliminado')
-        } catch(error){
-            console.error(error)
-            return res.redirect('/rol/vista/inicio?error=Error eliminando rol')
-        }
     }
 
 }

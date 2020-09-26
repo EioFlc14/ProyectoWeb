@@ -16,7 +16,8 @@
 <body>
 
 <%- include('../compartido/estilos-generales/estilos-generales-component') %>
-<%- include('../compartido/menu/menu-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
 
 <% let textoBoton = '' %>
 <% let rutaBoton = '' %>
@@ -24,18 +25,15 @@
 <% if (rol === 'productor' || rol === 'admin') { %>
     <% esProductorAdmin = true %>
 <% } %>
-<% let metodo = '' %>
 <% let ruta = '' %>
-<% let usuario = 0 %>
-
-<% usuario = 3          /* Este debe ser un dato de dataSesion, el ID del productor logeado        arregloUsuarioProductos[0].usuarioId */ %>
 
 <br>
+
 <!-- BUSQUEDA-->
 <div class="col-md-12 col-lg-12 ml-auto">
     <div class="row">
         <div class=" col-md-12 col-lg-6">
-            <form action="/usuario-producto/vista/inicio/<%= rol %>/<%= usuario %>" method="get">
+            <form action="/usuario-producto/vista/inicio/<%= rol %>" method="get">
                 <div class="input-group-prepend">
                     <span class="input-group-text bg-white px-4 border-md border-right-0">
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor"
@@ -80,13 +78,10 @@
         <% esProductorAdmin = false %>
         <% textoBoton = 'Comprar' %>
         <% rutaBoton = '/factura/vista/crear' %>
-        <% metodo = 'post' %>
     <% } else if (rol === 'productor' || rol === 'admin') { %>
         <% esProductorAdmin = true %>
         <% textoBoton = 'Editar' %>
         <% rutaBoton = '/usuario-producto/vista/editar' %>
-        <% metodo = 'get' %>
-
     <% } %>
     <br>
 
@@ -118,8 +113,7 @@
             <div class="card-body">
                 <div class="form-group col-lg-12 mx-auto mb-0">
                     <div class="alert alert-success" role="alert">
-                        <a class="btn-block" href="/principal">No hay productos para mostrar. Regresar a pantalla
-                            principal</a>
+                        <a class="btn-block" href="/principal">No hay productos para mostrar. Regresar a pantalla principal</a>
                     </div>
                 </div>
             </div>
