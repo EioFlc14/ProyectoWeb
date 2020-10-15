@@ -1,0 +1,71 @@
+
+<% let usuarioid = usuarioId %>
+<% let esCliente = esClienteC %>
+<% let esProductor = esProductorP %>
+<% let esAdministrador = esAdministradorA %>
+
+
+<ul class="nav nav-pills" >
+    <li class="nav-item dropdown"
+        <% if(!esCliente) {  %>
+            style="display: none"
+        <% } %> >
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cliente</a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="/usuario-producto/vista/inicio/cliente">Ver Productos</a>
+            <a class="dropdown-item" href="/factura/vista/inicio/cliente">Mis Facturas</a>
+        </div>
+    </li>
+
+
+    <li class="nav-item dropdown"
+        <% if (!esProductor) { %>
+            style="display: none"
+        <% } %>>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Productor</a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="/usuario-producto/vista/inicio/productor">Mis productos</a>
+            <a class="dropdown-item" href="/factura/vista/inicio/productor">Mis Pedidos</a>
+        </div>
+    </li>
+
+
+    <li class="nav-item dropdown"
+        <% if (!esAdministrador) { %>
+            style="display: none"
+        <% } %> >
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administrador</a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="/unidad/vista/inicio">Unidades</a>
+            <a class="dropdown-item" href="/rol/vista/inicio">Roles</a>
+            <a class="dropdown-item" href="/producto/vista/inicio">Productos Genéricos</a>
+            <a class="dropdown-item" href="/factura/vista/inicio/admin">Compras realizadas</a>
+            <a class="dropdown-item" href="/usuario/vista/inicio">Usuarios</a>
+        </div>
+    </li>
+
+    <li class="nav-item ml-auto mr-5">
+        <a href="/principal">
+            <button type="button" class="btn btn-success">Organicamente</button>
+        </a>
+    </li>
+
+
+    <li class="nav-item dropdown ml-auto mr-5 ">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Mi cuenta</a>
+        <div class="dropdown-menu mr-5 ">
+            <a class="dropdown-item " href="/usuario/vista/editar">Actualizar Datos</a>
+            <a class="dropdown-item " href="/usuario/vista/cambiarContrasena">Cambiar Contraseña</a>
+            <a class="dropdown-item " href="/cerrarSesion">Cerrar Sesión</a>
+        </div>
+    </li>
+
+</ul>
+
+
+
+
+
+
+
+

@@ -1,0 +1,200 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+</head>
+
+<body>
+
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
+
+<% const existeUsuarioProducto = typeof usuarioProducto != 'undefined' %>
+
+<% let existeProducto = typeof producto !== 'undefined' %>
+<% let existeStock = typeof stock !== 'undefined' %>
+<% let existePrecio = typeof precio !== 'undefined' %>
+<% let existeUnidad = typeof unidad !== 'undefined' %>
+<% let existeUsuario = typeof usuario !== 'undefined' %>
+<% let existeImagen = typeof imagen !== 'undefined' %>
+
+<% if(existeUsuarioProducto) { %>
+    <% existeProducto = true %>
+    <% existeStock = true %>
+    <% existePrecio = true %>
+    <% existeUnidad = true %>
+    <% existeUsuario = true %>
+    <% existeImagen = true %>
+
+    <% producto = usuarioProducto.producto.nombre %>
+    <% stock = usuarioProducto.stock %>
+    <% precio = usuarioProducto.precio %>
+    <% unidad = usuarioProducto.unidad.nombre %>
+    <% unidadId = usuarioProducto.unidad.unidadId %>
+    <% usuario = usuarioProducto.usuario.apellido + ' ' + usuarioProducto.usuario.nombre %>
+    <% imagen = usuarioProducto.imagen %>
+
+<% } %>
+
+<form action=" <%= existeUsuarioProducto ? '/usuario-producto/editarDesdeVista/' + usuarioProducto.usuarioProductoId : '/usuario-producto/crearDesdeVista' %>"
+      method="POST" enctype="multipart/form-data">
+
+    <div class="container">
+
+        <br>
+        <h1><span class="badge badge-success ml-auto "> <%= existeUsuarioProducto ? 'Editar' : ' Registro Nuevo' %> Producto</span>
+        </h1>
+        <br>
+
+        <% if(existeUsuarioProducto) { %>
+            <div class="form-row ">
+                <div class="form-group col-md-12">
+                    <span class="badge badge-pill badge-success">Producto:</span>
+                    <input id="productoProductoId" type="text" name="nombre" disabled
+                           class="form-control bg-white "
+                           value="<%= existeProducto ? producto : '' %>" required>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="form-row ">
+                <div class="form-group col-md-12">
+                    <span class="badge badge-pill badge-success">Producto:</span>
+                    <select name="producto" id="producto" class="form-control">>
+                        <% arregloProductos.forEach((objeto) => { %>
+                            <option value="<%= objeto.productoId %>" selected><%= objeto.nombre %></option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- STOCK -->
+        <div class="form-row ">
+            <div class="form-group col-md-12">
+                <span class="badge badge-pill badge-success">Stock:</span>
+                <input id="stock" type="number" name="stock"
+                       placeholder="Ingrese el stock"
+                       class="form-control bg-white "
+                       value="<%= existeStock ? stock : '' %>" required>
+            </div>
+        </div>
+
+
+        <!-- UNIDAD -->
+        <div class="form-row ">
+            <div class="form-group col-md-12">
+                <span class="badge badge-pill badge-success">Unidad de venta:</span>
+                <select name="unidad" id="unidad" class="form-control">
+                    <% arregloUnidades.forEach((objeto) => { %>
+                        <% if (existeUsuarioProducto) { %>
+                            <% if (objeto.unidadId == unidadId){ %>
+                                <option value="<%= objeto.unidadId %>" selected><%= objeto.nombre %></option>
+                            <% } else { %>
+                                <option value="<%= objeto.unidadId %>"><%= objeto.nombre %></option>
+                            <% } %>
+                        <% } else { %>
+                            <option value="<%= objeto.unidadId %>" selected><%= objeto.nombre %></option>
+                    <% }}) %>
+                </select>
+            </div>
+        </div>
+
+
+        <!-- PRECIO -->
+        <div class="form-row ">
+            <div class="form-group col-md-12">
+                <span class="badge badge-pill badge-success">Precio ($):</span>
+                <input id="precio" type="text" name="precio"
+                       placeholder="Ingrese el precio por unidad"
+                       class="form-control bg-white  "
+                       value="<%= existePrecio ? precio : '' %>" required>
+            </div>
+        </div>
+
+
+        <!-- IMAGEN ACTUAL   -->
+        <% if (existeImagen) { %>
+            <div class="form-row ">
+                <div class="form-group col-md-12">
+                    <span class="badge badge-pill badge-success">Imagen Actual:</span>
+                    <br>
+                    <figure class="figure">
+                        <img src="/imagenes/<%= imagen %>" width="400" height="300" class="figure-img img-fluid rounded"
+                             alt="figura">
+                    </figure>
+                </div>
+            </div>
+
+        <% } %>
+
+        <!-- SUBIR IMAGEN -->
+        <div class="form-row ">
+            <div class="form-group col-md-12">
+                <div class="input-group-prepend">
+                    <span class="badge badge-pill badge-success">Subir imagen:</span>
+                </div>
+                <div class="custom-file">
+                    <input type="file" id="imagen" name="imagen" accept="image/*" class="custom-file-input">
+                    <label class="custom-file-label" for="imagen">Elija la imagen</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit"
+                class="btn btn-success btn-lg btn-block"><%= existeUsuarioProducto ? 'Editar' : 'Crear' %></button>
+
+        <% if(typeof error != 'undefined'){ %>
+            <br>
+            <div class="ml-0 mr-0">
+                <div class="form-group col-lg-12 mx-auto mb-0">
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+
+</form>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+<script>
+    $('#imagen').on('change', function () {
+        var fileName = $(this).val();
+        fileName = fileName.replace("C:\\fakepath\\", "");
+        $(this).next('.custom-file-label').html(fileName);
+    })
+</script>
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+

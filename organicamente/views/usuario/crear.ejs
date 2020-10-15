@@ -1,0 +1,271 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+</head>
+
+<body>
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
+
+<% const existeUsuario = typeof usuario != 'undefined' %>
+
+<% let existeNombre = typeof nombre !== 'undefined' %>
+<% let existeApellido = typeof apellido !== 'undefined' %>
+<% let existeEmail = typeof email !== 'undefined' %>
+<% let existeTelefono = typeof telefono !== 'undefined' %>
+<% let existeDireccion = typeof direccion !== 'undefined' %>
+<% let existeUsername = typeof username !== 'undefined' %>
+<% let existeIdentificacion = typeof identificacion !== 'undefined' %>
+<% let tieneRolCliente = false %>
+<% let tieneRolProductor = false %>
+<% let tieneRolAdministrador = false %>
+
+<% let esAdministrador_ = esAdministrador %>
+
+
+<% if(existeUsuario) { %>
+    <% existeNombre = true %>
+    <% existeApellido = true %>
+    <% existeEmail = true %>
+    <% existeTelefono = true %>
+    <% existeDireccion = true %>
+    <% existeUsername = true %>
+    <% existeIdentificacion = true %>
+    <% tieneRolAdministrador = typeof administrador != 'undefined' %>
+    <% tieneRolCliente = typeof cliente != 'undefined' %>
+    <% tieneRolProductor = typeof productor != 'undefined' %>
+
+
+    <% nombre = usuario.nombre %>
+    <% apellido = usuario.apellido %>
+    <% email = usuario.email %>
+    <% telefono = usuario.telefono %>
+    <% direccion = usuario.direccion %>
+    <% username = usuario.username %>
+    <% identificacion = usuario.identificacion %>
+
+<% } %>
+
+<div class="form-row">
+
+    <div class="col-md-11 ml-auto mr-auto">
+        <br>
+        <h1><span class="badge badge-success"> <%= existeUsuario ? 'Editar' : 'Registro Nuevo' %> Usuario</span></h1>
+        <br>
+
+        <form action=" <%= existeUsuario ? '/usuario/editarDesdeVista/' + usuario.usuarioId : '/usuario/crearDesdeVista' %>"
+              method="post">
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <span class="badge badge-pill badge-success">Identificación (*):</span>
+                    <input id="identificacion"
+                           class="form-control"
+                           type="text"
+                    <% if(existeUsuario) { %>
+                           disabled
+                            <% } %>
+                           name="identificacion"
+                           required
+                           value="<%= existeIdentificacion ? identificacion : '' %>">
+                </div>
+                <div class="form-group col-md-6">
+                    <span class="badge badge-pill badge-success">Nombre de usuario (*):</span>
+                    <input class="form-control"
+                           id="username"
+                           type="text"
+                    <% if(existeUsuario) { %>
+                           disabled
+                            <% } %>
+                           required
+                           name="username"
+                           value="<%= existeUsername ? username : '' %>">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <span class="badge badge-pill badge-success">Nombre (*):</span>
+                    <input class="form-control"
+                           id="nombre"
+                           type="text"
+                           name="nombre"
+                           required
+                           value="<%= existeNombre ? nombre : '' %>">
+                </div>
+                <div class="form-group col-md-6">
+                    <span class="badge badge-pill badge-success">Apellido:</span>
+                    <input class="form-control"
+                           id="apellido"
+                           type="text"
+                           name="apellido"
+                           value="<%= existeApellido ? apellido : '' %>">
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <span class="badge badge-pill badge-success">Email (*):</span>
+                    <input class="form-control"
+                           id="email"
+                           type="email"
+                    <% if(existeUsuario) { %>
+                           disabled
+                            <% } %>
+                           name="email"
+                           required
+                           value="<%= existeEmail ? email : '' %>">
+                </div>
+                <div class="form-group col-md-6">
+                    <span class="badge badge-pill badge-success">Teléfono (*):</span>
+                    <input class="form-control"
+                           id="telefono"
+                           type="text"
+                           name="telefono"
+                           required
+                           value="<%= existeTelefono ? telefono : '' %>">
+                </div>
+            </div>
+
+
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <span class="badge badge-pill badge-success">Dirección (*):</span>
+                    <input class="form-control"
+                           id="direccion"
+                           type="text"
+                           name="direccion"
+                           required
+                           value="<%= existeDireccion ? direccion : '' %>">
+                </div>
+            </div>
+
+            <% if(!existeUsuario){ %>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <span class="badge badge-pill badge-success">Contraseña (*):</span>
+                        <input class="form-control"
+                               id="password"
+                               type="password"
+                               required
+                               name="password">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <span class="badge badge-pill badge-success">Confirme su contraseña (*):</span>
+                        <input class="form-control"
+                               id="passwordConfirmada"
+                               type="password"
+                               required
+                               name="passwordConfirmada">
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="text-center w-100">
+                <p class="text-muted font-weight-bold">Seleccione el rol:</p>
+            </div>
+            <div class="input-group col-lg-12 mb-4">
+                <div class="btn-group col-lg-12 mb-12" data-toggle="buttons">
+                    <label class="btn btn-primary form-check-label">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="productor"
+                               value="productor"
+                        <% if (tieneRolProductor){ %>
+                               checked
+                                <% } %>
+                        <% if (!esAdministrador_){ %>
+                               disabled
+                                <% } %>
+                               autocomplete="off">
+                        Productor
+                    </label>
+                    <label class="btn btn-success form-check-label">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="cliente"
+                        <% if (tieneRolCliente){ %>
+                               checked
+                                <% } %>
+                        <% if (!esAdministrador_){ %>
+                               disabled
+                                <% } %>
+                               value="cliente"
+                               autocomplete="off">
+                        Cliente
+                    </label>
+                    <label class="btn btn-warning form-check-label">
+                        <input class="form-check-input"
+                               type="checkbox"
+                        <% if (tieneRolAdministrador){ %>
+                               checked
+                                <% } %>
+                        <% if (!esAdministrador_){ %>
+                               disabled
+                                <% } %>
+                               name="administrador"
+                               value="administrador"
+                               autocomplete="off">
+                        Administrador
+                    </label>
+                </div>
+            </div>
+            <br>
+
+
+            <div class="form-row">
+                <br>
+                <div class="form-group col-md-8 mr-auto ml-auto">
+                    <br>
+                    <button type="submit"
+                            class="btn btn-success btn-lg btn-block"><%= existeUsuario ? 'EDITAR' : 'CREAR' %></button>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+<% if(typeof error != 'undefined'){ %>
+    <br>
+    <div class="ml-0 mr-0">
+        <div class="form-group col-lg-12 mx-auto mb-0">
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+
+
+
+
+

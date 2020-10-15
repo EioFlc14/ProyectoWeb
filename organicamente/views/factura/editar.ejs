@@ -1,0 +1,191 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+</head>
+
+<body>
+
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
+<br>
+<div class="form-row">
+
+    <div class="col-md-7 col-lg-7 ml-lg-5">
+
+        <div class="form-row">
+            <br>
+            <div class="form-group col-md-6">
+                <h1><span class="badge badge-success">Factura N° <%= factura.facturaId %></span></h1>
+            </div>
+            <br>
+            <div class="form-group col-md-6">
+                <% if(rol != 'cliente') { %>
+                    <% if(factura.cumplido.toLowerCase() === 'no') { %>
+                        <form action="/factura/editarDesdeVista/<%= factura.facturaId %>" method="get">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-lg btn-block">MARCAR ORDEN COMO
+                                    CUMPLIDA
+                                </button>
+                            </div>
+                        </form>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Fecha:</span>
+                <input class="form-control" value="<%= factura.fecha %>" disabled>
+            </div>
+            <div class="form-group col-md-3">
+                <span class="badge badge-pill badge-success">Total ($):</span>
+                <input type="text" class="form-control" value="<%= Number(factura.total).toFixed(2) %>" disabled>
+            </div>
+            <div class="form-group col-md-3">
+                <span class="badge badge-pill badge-success">Cumplido:</span>
+                <input type="text" class="form-control" value="<%= factura.cumplido %>" disabled>
+            </div>
+        </div>
+        <br>
+        <br>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <span class="badge badge-pill badge-success">Nombre del cliente:</span>
+                <input class="form-control" value="<%= factura.apellidoC + ' ' + factura.nombreC %>" disabled>
+            </div>
+            <div class="form-group col-md-4">
+                <span class="badge badge-pill badge-success">Identificacion del cliente:</span>
+                <input type="text" class="form-control" value="<%= factura.identificacionC %>" disabled>
+            </div>
+            <div class="form-group col-md-4">
+                <span class="badge badge-pill badge-success">Teléfono del cliente:</span>
+                <input type="text" class="form-control" value="<%= factura.telefonoC %>" disabled>
+            </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Dirección del cliente:</span>
+                <input class="form-control" value="<%= factura.direccionC %>" disabled>
+            </div>
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Correo del cliente:</span>
+                <input type="text" class="form-control" value="<%= factura.emailC %>" disabled>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <span class="badge badge-pill badge-success">Producto:</span>
+                <input class="form-control" value="<%= factura.producto %>" disabled>
+            </div>
+            <div class="form-group col-md-3">
+                <span class="badge badge-pill badge-success">Unidad:</span>
+                <input type="text" class="form-control" value="<%= factura.unidad %>" disabled>
+            </div>
+            <div class="form-group col-md-3">
+                <span class="badge badge-pill badge-success">Cantidad:</span>
+                <input type="text" class="form-control" value="<%= factura.cantidad %>" disabled>
+            </div>
+            <div class="form-group col-md-3">
+                <span class="badge badge-pill badge-success">Precio Unitario ($):</span>
+                <input type="text" class="form-control" value="<%= Number(factura.precio).toFixed(2) %>" disabled>
+            </div>
+
+        </div>
+
+        <br>
+        <br>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <span class="badge badge-pill badge-success">Nombre del productor:</span>
+                <input class="form-control" value="<%= factura.apellidoP + ' ' + factura.nombreP %>" disabled>
+            </div>
+            <div class="form-group col-md-4">
+                <span class="badge badge-pill badge-success">Identificacion del productor:</span>
+                <input type="text" class="form-control" value="<%= factura.identificacionP %>" disabled>
+            </div>
+            <div class="form-group col-md-4">
+                <span class="badge badge-pill badge-success">Teléfono del productor:</span>
+                <input type="text" class="form-control" value="<%= factura.telefonoP %>" disabled>
+            </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Dirección del productor:</span>
+                <input class="form-control" value="<%= factura.direccionP %>" disabled>
+            </div>
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Correo del productor:</span>
+                <input type="text" class="form-control" value="<%= factura.emailP %>" disabled>
+            </div>
+        </div>
+
+        <% if(typeof error != 'undefined'){ %>
+            <br>
+            <div class="ml-0 mr-0">
+                <div class="form-group col-lg-12 mx-auto mb-0">
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+    </div>
+    <div class="col-md-4 col-lg-4 ml-5">
+        <br>
+        <h5>
+            <span class="badge badge-pill badge-success">Imagen del producto comprado</span>
+        </h5>
+        <br>
+        <img src="/imagenes/<%= factura.imagen %>" width="800" height="1000" alt=""
+             class="img-fluid mb-3 d-none d-md-block">
+    </div>
+
+
+</div>
+
+
+<%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
+
+
+

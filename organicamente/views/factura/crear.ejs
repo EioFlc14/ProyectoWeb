@@ -1,0 +1,137 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <title>Organicamente</title>
+
+    <script type="application/javascript">
+        function cambiarTotal() {
+            document.querySelector("#cantidad")
+                .addEventListener("blur", function () {
+                    var cantidad = Number(document.getElementById("cantidad").value)
+                    var result = (cantidad - Math.floor(cantidad)) !== 0;
+                    if(result){
+                        document.getElementById("total").value = 0.0;
+                    } else {
+                        const total = Number(document.getElementById("precio").value) * cantidad;
+                        document.getElementById("total").value = total.toFixed(2);
+                    }
+                });
+        }
+    </script>
+
+</head>
+
+<body>
+
+<%- include('../compartido/estilos-generales/estilos-generales-component') %>
+<%- include('../compartido/menu/menu-component', {usuarioId: id, esClienteC: esCliente, esProductorP:esProductor, esAdministradorA:esAdministrador}); -%>
+
+<br>
+<div class="form-row">
+
+
+    <div class="col-md-6 col-lg-5 ml-5">
+        <br>
+        <h5>
+            <span class="badge badge-pill badge-success">Imagen del producto a comprar</span>
+        </h5>
+        <br>
+        <img src="/imagenes/<%= producto.imagen %>" width="800" height="1000" alt=""
+             class="img-fluid mb-3 d-none d-md-block">
+    </div>
+
+
+    <div class="col-md-6 col-lg-5 ml-lg-5">
+
+        <br>
+        <h1><span class="badge badge-success">Proceso de Compra</span></h1>
+        <br>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Productor:</span>
+                <input class="form-control" value="<%= producto.usuario.apellido + ' ' + producto.usuario.nombre %>"
+                       disabled>
+            </div>
+            <div class="form-group col-md-6">
+                <span class="badge badge-pill badge-success">Telefono del productor:</span>
+                <input type="text" class="form-control" value="<%= producto.usuario.telefono %>" disabled>
+            </div>
+        </div>
+        <div class="form-group">
+            <span class="badge badge-pill badge-success">Dirección del productor:</span>
+            <input type="text" class="form-control" value="<%= producto.usuario.direccion %>" disabled>
+        </div>
+        <div class="form-group">
+            <span class="badge badge-pill badge-success">Nombre del producto:</span>
+            <input type="text" class="form-control" value="<%= producto.producto.nombre %>" disabled>
+        </div>
+        <form action="/factura/crearDesdeVista?usuarioProducto=<%= producto.usuarioProductoId %>" method="POST">
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <span class="badge badge-pill badge-success">Precio ($):</span>
+                    <input id="precio" type="text" class="form-control" value="<%= producto.precio %>" name="precio"
+                           readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <span class="badge badge-pill badge-success">Cantidad:</span>
+                    <input id="cantidad" type="number" class="form-control" name="cantidad" onchange="cambiarTotal()"
+                           required>
+                </div>
+                <div class="form-group col-md-4">
+                    <span class="badge badge-pill badge-success">Total ($):</span>
+                    <input id="total" type="text" name="total" class="form-control" value=0.0 readonly>
+                </div>
+            </div>
+            <br>
+            <br>
+            <button type="submit" class="btn btn-success btn-lg btn-block">COMPRAR</button>
+        </form>
+
+        <% if(typeof error != 'undefined'){ %>
+            <br>
+            <div class="ml-0 mr-0">
+                <div class="form-group col-lg-12 mx-auto mb-0">
+                    <div class="alert alert-danger" role="alert">
+                        <%= error %>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+    </div>
+
+
+</div>
+
+
+<%- include('../compartido/funcionalidad-general/funcionalidad-general-component') %>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
+
+
+
+
+
+
