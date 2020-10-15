@@ -1,3 +1,6 @@
 /.idea
 /.ipynb_checkpoints
-/imagenes
+/dist
+/node_modules
+
+organicamente/dist/
