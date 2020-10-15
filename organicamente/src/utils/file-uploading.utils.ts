@@ -10,7 +10,6 @@ export const imageFileFilter = (req, file, callback) => {
 
 
 export const editFileName = (req, file, callback) => {
-    //const filename = uuid() + '.' + file.originalname.split('.')[1];
     const filename = uuid() + '.' + file.originalname.split('.')[1];
     callback(null, `${filename}`);
 };

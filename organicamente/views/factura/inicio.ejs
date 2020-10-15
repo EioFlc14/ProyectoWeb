@@ -68,7 +68,7 @@
                          width="100">
                     <div class="card-body">
                         <h5 class="card-title"><%= objeto.producto %></h5>
-                        <p class="card-text">Total: <%= objeto.precio %></p>
+                        <p class="card-text">Total: <%= Number.parseFloat(objeto.total).toFixed(2) %></p>
                         <p class="card-text">Fecha: <%= objeto.fecha %></p>
                         <p class="card-text">Productor: <%= objeto.apellidoP + ' ' + objeto.nombreP %></p>
                     </div>

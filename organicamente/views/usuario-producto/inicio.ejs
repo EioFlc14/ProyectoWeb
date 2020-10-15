@@ -94,7 +94,7 @@
                          width="100">
                     <div class="card-body">
                         <h5 class="card-title"><%= objeto.producto %></h5>
-                        <p class="card-text">Precio: <%= objeto.precio %></p>
+                        <p class="card-text">Precio: <%= Number.parseFloat(objeto.precio).toFixed(2) %></p>
                         <p class="card-text">Unidad: <%= objeto.unidad %></p>
                         <p class="card-text">Productor: <%= objeto.apellido + ' ' + objeto.nombre %></p>
                     </div>
